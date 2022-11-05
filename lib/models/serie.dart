@@ -77,15 +77,19 @@ class Serie {
   }
 }
 
-Future<List<Serie>> allSeries(DatabaseService dbs, [bool? vistas, bool? aplazadas]) async {
+Future<List<Serie>> allSeries(DatabaseService dbs,
+    [bool? vista, bool? aplazada]) async {
   final db = await dbs.database;
-  /* var response = await db.query(TABLE_WORDS, where: '$COL_ENGLISH_WORD = ? OR $COL_GERMAN_WORD = ?', whereArgs: [userSearch, userSearch]);
-db.query(table, columns, selection,
-        selectionArgs, groupBy, having,
-        orderBy + " COLLATE NOCASE ASC");
 
-  */
-  final List<Map<String, dynamic>> maps = await db.query('serie', orderBy: 'nombre COLLATE NOCASE ASC');
+  final int xvista = (vista == null || !vista) ? 0 : 1;
+  final int xaplazada = (aplazada == null || !aplazada) ? 0 : 1;
+
+  final List<Map<String, dynamic>> maps = (vista == null && aplazada == null)
+      ? await db.query('serie', orderBy: 'nombre COLLATE NOCASE ASC')
+      : await db.query('serie',
+          where: 'vista = ? AND aplazada = ?',
+          whereArgs: [xvista, xaplazada],
+          orderBy: 'nombre COLLATE NOCASE ASC');
 
   return List.generate(maps.length, (i) {
     return Serie(
@@ -101,4 +105,3 @@ db.query(table, columns, selection,
     );
   });
 }
-

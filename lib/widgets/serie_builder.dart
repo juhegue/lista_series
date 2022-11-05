@@ -66,17 +66,17 @@ class SerieBuilder extends StatelessWidget {
                           text: serie.nombre,
                           borderColor: Colors.green,
                           foreColor: Colors.black87,
-                          fontSize: 24.0)
+                          fontSize: 18.0)
                       : (serie.aplazada!)
                       ? OutlinedText(
                           text: serie.nombre,
                           borderColor: Colors.blueGrey,
                           foreColor: Colors.black87,
-                          fontSize: 24.0)
+                          fontSize: 18.0)
                        : Text(
                           serie.nombre,
                           style: const TextStyle(
-                            fontSize: 24.0,
+                            fontSize: 18.0,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
