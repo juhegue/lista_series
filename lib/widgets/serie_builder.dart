@@ -84,7 +84,7 @@ class SerieBuilder extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                          'Temporada: ${serie.temporada} Capítulo: ${serie.capitulo}\n\n${DateFormat("dd/MM/yyyy").format(serie.fechaCreacion!)}'),
+                          'Temporada: ${serie.temporada}\nCapítulo: ${serie.capitulo}\n${DateFormat("dd/MM/yyyy").format(serie.fechaCreacion!)}'),
                     ],
                   ),
                 ],
