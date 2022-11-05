@@ -38,6 +38,9 @@ dependencies:
   cupertino_icons: ^1.0.2
   pasteboard: ^0.2.0
   image_picker:
+  path:
+  sqflite:
+  sqflite_common_ffi:
   
 
 dev_dependencies:

@@ -11,9 +11,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -52,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   'You have pushed the button this many times:',
                 ),
                 Text(
-                  '$_counter',
+                  '0',
                   style: Theme.of(context).textTheme.headline4,
                 ),
               ],
@@ -74,4 +71,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ));
   }
+
+  void saveSerie() {}
 }
