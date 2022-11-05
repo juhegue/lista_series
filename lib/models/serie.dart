@@ -9,7 +9,7 @@ class Serie {
   final int temporada;
   final int capitulo;
   final bool? vista;
-  final bool? aparcada;
+  final bool? aplazada;
   final Uint8List? imagen;
 
   const Serie({
@@ -19,7 +19,7 @@ class Serie {
     required this.temporada,
     required this.capitulo,
     this.vista,
-    this.aparcada,
+    this.aplazada,
     this.imagen,
   });
 
@@ -34,14 +34,14 @@ class Serie {
       'temporada': temporada,
       'capitulo': capitulo,
       'vista': (vista ?? false) ? 1 : 0,
-      'aparcada': (aparcada ?? false) ? 1 : 0,
+      'aplazada': (aplazada ?? false) ? 1 : 0,
       'imagen': imagen,
     };
   }
 
   @override
   String toString() {
-    return 'Serie [$id] $fechaCreacion $nombre T:$temporada C:$capitulo $vista $aparcada}';
+    return 'Serie [$id] $fechaCreacion $nombre T:$temporada C:$capitulo $vista $aplazada}';
   }
 
   Future<void> saveSerie(DatabaseService dbs) async {
@@ -77,10 +77,15 @@ class Serie {
   }
 }
 
-Future<List<Serie>> allSeries(DatabaseService dbs,) async {
+Future<List<Serie>> allSeries(DatabaseService dbs, [bool? vistas, bool? aplazadas]) async {
   final db = await dbs.database;
-  // var response = await db.query(TABLE_WORDS, where: '$COL_ENGLISH_WORD = ? OR $COL_GERMAN_WORD = ?', whereArgs: [userSearch, userSearch]);
-  final List<Map<String, dynamic>> maps = await db.query('serie');
+  /* var response = await db.query(TABLE_WORDS, where: '$COL_ENGLISH_WORD = ? OR $COL_GERMAN_WORD = ?', whereArgs: [userSearch, userSearch]);
+db.query(table, columns, selection,
+        selectionArgs, groupBy, having,
+        orderBy + " COLLATE NOCASE ASC");
+
+  */
+  final List<Map<String, dynamic>> maps = await db.query('serie', orderBy: 'nombre COLLATE NOCASE ASC');
 
   return List.generate(maps.length, (i) {
     return Serie(
@@ -91,7 +96,8 @@ Future<List<Serie>> allSeries(DatabaseService dbs,) async {
       temporada: maps[i]['temporada'],
       capitulo: maps[i]['capitulo'],
       vista: (maps[i]['vista'] == 1) ? true : false,
-      aparcada: (maps[i]['aparcada'] == 1) ? true : false,
+      aplazada: (maps[i]['aplazada'] == 1) ? true : false,
+      imagen: maps[i]['imagen'],
     );
   });
 }

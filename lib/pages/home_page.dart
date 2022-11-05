@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lista_series/models/serie.dart';
+import 'package:lista_series/services/database_service.dart';
 import 'package:lista_series/pages/serie_form_page.dart';
+import 'package:lista_series/widgets/serie_builder.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -11,6 +14,24 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  late final DatabaseService _databaseService;
+
+  @override
+  void initState() {
+    super.initState();
+    _databaseService = DatabaseService();
+  }
+
+  @override
+  void dispose() {
+    _databaseService.close();
+    super.dispose();
+  }
+
+  Future<List<Serie>> _getSeries() async {
+    return await allSeries(_databaseService);
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -41,20 +62,22 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
           ),
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const Text(
-                  'You have pushed the button this many times:',
-                ),
-                Text(
-                  '0',
-                  style: Theme.of(context).textTheme.headline4,
-                ),
-              ],
-            ),
+          body: SerieBuilder(
+            future: _getSeries(),
+            onEdit: (value) {
+              {
+                Navigator.of(context)
+                    .push(
+                      MaterialPageRoute(
+                        builder: (_) => SerieFormPage(serie: value),
+                        fullscreenDialog: true,
+                      ),
+                    )
+                    .then((_) => setState(() {}));
+              }
+            },
           ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
           floatingActionButton: FloatingActionButton(
             onPressed: () {
               Navigator.of(context)

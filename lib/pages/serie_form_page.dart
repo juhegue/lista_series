@@ -32,7 +32,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
   int _capitulo = 1;
   Uint8List? _imagen;
   bool _vista = false;
-  bool _aparcada = false;
+  bool _aplazada = false;
   int? serieId;
 
   void getSerieId() {
@@ -51,13 +51,13 @@ class _SerieFormPageState extends State<SerieFormPage> {
       _capitulo = widget.serie!.capitulo;
       _imagen = widget.serie!.imagen;
       _vista = widget.serie!.vista!;
-      _aparcada = widget.serie!.aparcada!;
+      _aplazada = widget.serie!.aplazada!;
     }
   }
 
   @override
   void dispose() {
-    _databaseService.close();
+    //_databaseService.close();
     super.dispose();
   }
 
@@ -68,7 +68,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
       temporada: _temporada,
       capitulo: _capitulo,
       vista: _vista,
-      aparcada: _aparcada,
+      aplazada: _aplazada,
       imagen: _imagen,
     );
     serie.saveSerie(_databaseService);
@@ -169,24 +169,24 @@ class _SerieFormPageState extends State<SerieFormPage> {
                     onChanged: (bool? value) {
                       setState(() {
                         _vista = value!;
-                        if (_vista) _aparcada = false;
+                        if (_vista) _aplazada = false;
                       });
                     },
                   ),
                   const SizedBox(height: 4.0),
                   const Text(
-                    'Esta aparcada',
+                    'Esta aplazada',
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   Checkbox(
-                    value: _aparcada,
+                    value: _aplazada,
                     onChanged: (bool? value) {
                       setState(() {
-                        _aparcada = value!;
-                        if (_aparcada) _vista = false;
+                        _aplazada = value!;
+                        if (_aplazada) _vista = false;
                       });
                     },
                   ),

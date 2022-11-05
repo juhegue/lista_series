@@ -25,7 +25,7 @@ class DatabaseService {
 
     final databasePath = await getDatabasesPath();
 
-    final path = join(databasePath, 'flutter_sqflite_database.db');
+    final path = join(databasePath, 'lista_series.db');
 
     // Set the version. This executes the onCreate function and provides a
     // path to perform database upgrades and downgrades.
@@ -39,7 +39,7 @@ class DatabaseService {
 
   Future<void> _onCreate(Database db, int version) async {
     await db.execute(
-      'CREATE TABLE serie(id INTEGER PRIMARY KEY AUTOINCREMENT, fecha_creacion INTEGER, nombre TEXT, temporada INTEGER, capitulo INTEGER,vista INTEGER, aparcada INTEGER, imagen BLOB)',
+      'CREATE TABLE serie(id INTEGER PRIMARY KEY AUTOINCREMENT, fecha_creacion INTEGER, nombre TEXT, temporada INTEGER, capitulo INTEGER,vista INTEGER, aplazada INTEGER, imagen BLOB)',
     );
   }
 
