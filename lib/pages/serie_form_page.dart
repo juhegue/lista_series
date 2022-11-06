@@ -1,16 +1,17 @@
+import 'dart:convert';
+import 'dart:typed_data';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart'
+    show defaultTargetPlatform, TargetPlatform;
+import 'package:image_picker/image_picker.dart';
+import 'package:pasteboard/pasteboard.dart';
 import 'package:lista_series/widgets/incrementa_decrementa.dart';
 import 'package:lista_series/services/database_service.dart';
 import 'package:lista_series/models/serie.dart';
 import 'package:lista_series/constants.dart'
     show kImageBase64Galeria, kImageBase64Clipboar;
-import 'package:image_picker/image_picker.dart';
-import 'package:pasteboard/pasteboard.dart';
-import 'package:flutter/foundation.dart'
-    show defaultTargetPlatform, TargetPlatform;
-import 'dart:convert';
-import 'dart:typed_data';
-import 'dart:io';
+import 'package:lista_series/widgets/dialog.dart';
 
 var _kImageBase64 = (defaultTargetPlatform == TargetPlatform.android)
     ? kImageBase64Galeria
@@ -29,7 +30,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
   final TextEditingController _nombreController = TextEditingController();
   final ImagePicker picker = ImagePicker();
   int _temporada = 1;
-  int _capitulo = 1;
+  int _capitulo = 0;
   Uint8List? _imagen;
   bool _vista = false;
   bool _aplazada = false;
@@ -75,9 +76,11 @@ class _SerieFormPageState extends State<SerieFormPage> {
     Navigator.pop(context);
   }
 
-  void _deleteSerie() {
-    widget.serie!.deleteSerie(_databaseService);
-    Navigator.pop(context);
+  void _deleteSerie(ok) {
+    if (ok) {
+      widget.serie!.deleteSerie(_databaseService);
+      Navigator.pop(context);
+    }
   }
 
   void _getDataFile(file) async {
@@ -151,7 +154,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
                     },
                     onDecrementa: () {
                       setState(() {
-                        (_capitulo > 1) ? _capitulo-- : _capitulo;
+                        (_capitulo > 0) ? _capitulo-- : _capitulo;
                       });
                     },
                   ),
@@ -242,8 +245,14 @@ class _SerieFormPageState extends State<SerieFormPage> {
                         height: 45.0,
                         width: 150.0,
                         child: ElevatedButton(
-                          onPressed:
-                              (serieId != null) ? () => _deleteSerie() : null,
+                          onPressed: (serieId != null)
+                              ? () => showConfigDialog(
+                                    context,
+                                    'Borrar Serie',
+                                    '¿Está seguro de borrar: ${_nombreController.text}?',
+                                    _deleteSerie,
+                                  )
+                              : null,
                           style: ButtonStyle(
                             backgroundColor:
                                 MaterialStateProperty.all<Color>(Colors.red),

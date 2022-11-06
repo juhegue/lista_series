@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:lista_series/models/serie.dart';
 import 'package:lista_series/services/database_service.dart';
 import 'package:lista_series/pages/serie_form_page.dart';
 import 'package:lista_series/widgets/serie_builder.dart';
+import 'package:lista_series/util/backu_restore.dart';
+import 'package:lista_series/widgets/dialog.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -58,11 +61,129 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     }
   }
 
+  void msgResultado(bool resultado, String title, String ok, String ko) {
+    (resultado)
+        ? showMsgDialog(context, title, ok)
+        : showMsgDialog(context, title, ko);
+  }
+
+  Future<void> accionDb(Function accion, Function result, String title,
+      String ok, String ko) async {
+    if (await Permission.storage.request().isPermanentlyDenied) {
+      await openAppSettings();
+    }
+    bool r = await accion(_databaseService);
+    result(r, title, ok, ko);
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
         length: 4,
         child: Scaffold(
+          drawer: Drawer(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                UserAccountsDrawerHeader(
+                  decoration: const BoxDecoration(color: Colors.teal),
+                  accountName: const Text(
+                    '©Juhegue',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  accountEmail: const Text(
+                    "Lista series",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  currentAccountPicture: Image.asset('assets/images/serie.png'),
+                ),
+                /*                
+                const DrawerHeader(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/serie.png'),
+                      //fit: BoxFit.fitHeight,
+                      //scale:0.5
+                    ),
+                    color: Colors.teal,
+                  ),
+                  child: Text('Juhegue'),
+                ),*/
+                ListTile(
+                  leading: const Icon(
+                    Icons.backup,
+                  ),
+                  title: const Text('Realizar backup'),
+                  onTap: () {
+                    accionDb(
+                        backupDb,
+                        msgResultado,
+                        'Backup',
+                        'Completada con éxito en la carpeta Descargas.',
+                        'ERROR.Sin permisos.');
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
+                    Icons.restore,
+                  ),
+                  title: const Text('Restaurar backup'),
+                  onTap: () {
+                    accionDb(restoreDb, msgResultado, 'Restaurar Backup',
+                        'Completada con éxito.', 'Acción no realizada.');
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
+                    Icons.backup,
+                  ),
+                  title: const Text('Realizar json backup'),
+                  onTap: () {
+                    accionDb(
+                        backupJson,
+                        msgResultado,
+                        'Backup json',
+                        'Completada con éxito en la carpeta Descargas',
+                        'ERROR.Sin permisos.');
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
+                    Icons.restore,
+                  ),
+                  title: const Text('Restaurar json backup'),
+                  onTap: () {
+                    accionDb(restoreJson, msgResultado, 'Restaurar Backup json',
+                        'Completada con éxito.', 'Acción no realizada.');
+                    Navigator.pop(context);
+                  },
+                ),
+                const AboutListTile(
+                  icon: Icon(
+                    Icons.info,
+                  ),
+                  applicationIcon: Icon(
+                    Icons.local_play,
+                  ),
+                  applicationName: 'Lista Serie',
+                  applicationVersion: '0.1.beta',
+                  applicationLegalese: '© 2022 Juhegue',
+                  aboutBoxChildren: [
+                    Text(
+                        'Para los amantes de Kodi que se les olvida la serie vista ;) .'),
+                  ],
+                  child: Text('Acerca de...'),
+                ),
+              ],
+            ),
+          ),
           appBar: AppBar(
             title: Text(widget.title),
             centerTitle: true,

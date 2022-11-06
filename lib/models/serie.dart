@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:convert';
 import 'package:sqflite/sqflite.dart';
 import 'package:lista_series/services/database_service.dart';
 
@@ -35,7 +36,7 @@ class Serie {
       'capitulo': capitulo,
       'vista': (vista ?? false) ? 1 : 0,
       'aplazada': (aplazada ?? false) ? 1 : 0,
-      'imagen': imagen,
+      'imagen': (imagen == null) ? null : base64.encode(imagen!),
     };
   }
 
@@ -101,7 +102,8 @@ Future<List<Serie>> allSeries(DatabaseService dbs,
       capitulo: maps[i]['capitulo'],
       vista: (maps[i]['vista'] == 1) ? true : false,
       aplazada: (maps[i]['aplazada'] == 1) ? true : false,
-      imagen: maps[i]['imagen'],
+      imagen:
+          (maps[i]['imagen'] == null) ? null : base64.decode(maps[i]['imagen']),
     );
   });
 }
