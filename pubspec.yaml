@@ -46,6 +46,7 @@ dependencies:
   permission_handler:
   html:
   file_picker:
+  url_launcher: ^6.1.6
   
 dev_dependencies:
   flutter_test:

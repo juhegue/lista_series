@@ -1,7 +1,8 @@
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:lista_series/models/serie.dart';
 import 'package:lista_series/widgets/outlined_text.dart';
-import 'package:intl/intl.dart';
 
 class SerieBuilder extends StatelessWidget {
   const SerieBuilder({
@@ -11,6 +12,15 @@ class SerieBuilder extends StatelessWidget {
   }) : super(key: key);
   final Future<List<Serie>> future;
   final Function(Serie) onEdit;
+
+  Future<void> _launchInBrowser(Uri url) async {
+    if (!await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw 'Could not launch $url';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,9 +62,15 @@ class SerieBuilder extends StatelessWidget {
                 color: (serie.imagen == null) ? Colors.grey[200] : Colors.white,
               ),
               alignment: Alignment.center,
-              child: (serie.imagen == null)
-                  ? const Icon(Icons.movie, size: 60.0)
-                  : Image.memory(serie.imagen!),
+              child: GestureDetector(
+                  onTap: () {
+                    final Uri url = Uri.parse(
+                        'https://www.google.com/search?q=serie+${serie.nombre}');
+                    _launchInBrowser(url);
+                  },
+                  child: (serie.imagen == null)
+                      ? const Icon(Icons.movie, size: 60.0)
+                      : Image.memory(serie.imagen!)),
             ),
             const SizedBox(width: 20.0),
             Expanded(
@@ -68,18 +84,18 @@ class SerieBuilder extends StatelessWidget {
                           foreColor: Colors.black87,
                           fontSize: 18.0)
                       : (serie.aplazada!)
-                      ? OutlinedText(
-                          text: serie.nombre,
-                          borderColor: Colors.blueGrey,
-                          foreColor: Colors.black87,
-                          fontSize: 18.0)
-                       : Text(
-                          serie.nombre,
-                          style: const TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                          ? OutlinedText(
+                              text: serie.nombre,
+                              borderColor: Colors.blueGrey,
+                              foreColor: Colors.black87,
+                              fontSize: 18.0)
+                          : Text(
+                              serie.nombre,
+                              style: const TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                   const SizedBox(height: 4.0),
                   Row(
                     children: [
