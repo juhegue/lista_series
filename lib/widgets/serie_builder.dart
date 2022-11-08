@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:lista_series/models/serie.dart';
 import 'package:lista_series/widgets/outlined_text.dart';
+import 'package:lista_series/widgets/dialog.dart';
 
 class SerieBuilder extends StatelessWidget {
   const SerieBuilder({
@@ -18,7 +19,7 @@ class SerieBuilder extends StatelessWidget {
       url,
       mode: LaunchMode.externalApplication,
     )) {
-      throw 'Could not launch $url';
+      throw 'Error al lanzar $url';
     }
   }
 
@@ -66,7 +67,11 @@ class SerieBuilder extends StatelessWidget {
                   onTap: () {
                     final Uri url = Uri.parse(
                         'https://www.google.com/search?q=serie+${serie.nombre}');
-                    _launchInBrowser(url);
+                    try {
+                      _launchInBrowser(url);
+                    } on Exception catch (e) {
+                      showMsgDialog(context, 'ERROR', e.toString());
+                    }
                   },
                   child: (serie.imagen == null)
                       ? const Icon(Icons.movie, size: 60.0)
