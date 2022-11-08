@@ -78,32 +78,48 @@ class Serie {
   }
 }
 
+Serie _mapToSerie(var map) {
+  return Serie(
+    id: map['id'],
+    fechaCreacion: DateTime.fromMillisecondsSinceEpoch(map['fecha_creacion']),
+    nombre: map['nombre'],
+    temporada: map['temporada'],
+    capitulo: map['capitulo'],
+    vista: (map['vista'] == 1) ? true : false,
+    aplazada: (map['aplazada'] == 1) ? true : false,
+    imagen: (map['imagen'] == null) ? null : base64.decode(map['imagen']),
+  );
+}
+
 Future<List<Serie>> allSeries(DatabaseService dbs,
     [bool? vista, bool? aplazada]) async {
   final db = await dbs.database;
 
-  final int xvista = (vista == null || !vista) ? 0 : 1;
-  final int xaplazada = (aplazada == null || !aplazada) ? 0 : 1;
+  final int intVista = (vista == null || !vista) ? 0 : 1;
+  final int intAplazada = (aplazada == null || !aplazada) ? 0 : 1;
 
   final List<Map<String, dynamic>> maps = (vista == null && aplazada == null)
       ? await db.query('serie', orderBy: 'nombre COLLATE NOCASE ASC')
       : await db.query('serie',
           where: 'vista = ? AND aplazada = ?',
-          whereArgs: [xvista, xaplazada],
+          whereArgs: [intVista, intAplazada],
           orderBy: 'nombre COLLATE NOCASE ASC');
 
   return List.generate(maps.length, (i) {
-    return Serie(
-      id: maps[i]['id'],
-      fechaCreacion:
-          DateTime.fromMillisecondsSinceEpoch(maps[i]['fecha_creacion']),
-      nombre: maps[i]['nombre'],
-      temporada: maps[i]['temporada'],
-      capitulo: maps[i]['capitulo'],
-      vista: (maps[i]['vista'] == 1) ? true : false,
-      aplazada: (maps[i]['aplazada'] == 1) ? true : false,
-      imagen:
-          (maps[i]['imagen'] == null) ? null : base64.decode(maps[i]['imagen']),
-    );
+    return _mapToSerie(maps[i]);
   });
+}
+
+Future countSeries(DatabaseService dbs, int limit, int offset) async {
+  final db = await dbs.database;
+  final count =
+      Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM serie'));
+  final List<Map<String, dynamic>> maps = await db.rawQuery(
+      'SELECT * FROM serie ORDER BY nombre COLLATE NOCASE ASC LIMIT $limit OFFSET $offset');
+
+  var list = List.generate(maps.length, (i) {
+    return _mapToSerie(maps[i]);
+  });
+
+  return [count ?? 0, list];
 }
