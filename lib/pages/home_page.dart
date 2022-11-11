@@ -1,6 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:lista_series/models/serie.dart';
 import 'package:lista_series/services/database_service.dart';
 import 'package:lista_series/pages/serie_form_page.dart';
 import 'package:lista_series/widgets/serie_builder.dart';
@@ -17,6 +17,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
+  var refreshKey = GlobalKey<RefreshIndicatorState>();
   late final DatabaseService _databaseService;
   late TabController _controller;
   int _selectedIndex = 0;
@@ -30,6 +31,11 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     _controller.addListener(() {
       setState(() {
         _selectedIndex = _controller.index;
+        if (kDebugMode) {
+          print(_selectedIndex);
+        }
+        // No es necesario, esto sería para forzar a posicionarce en un tab
+        //DefaultTabController.of(context)?.animateTo(_selectedIndex);
       });
     });
   }
@@ -38,27 +44,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   void dispose() {
     _databaseService.close();
     super.dispose();
-  }
-
-  Future<List<Serie>> _getSeries() async {
-    switch (_selectedIndex) {
-      case 0: //Viendo
-        {
-          return await allSeries(_databaseService, false, false);
-        }
-      case 1: //Aplazadas
-        {
-          return await allSeries(_databaseService, false, true);
-        }
-      case 2: //Vistas
-        {
-          return await allSeries(_databaseService, true, false);
-        }
-      default: // Todas
-        {
-          return await allSeries(_databaseService);
-        }
-    }
   }
 
   void msgResultado(bool resultado, String title, String ok, String ko) {
@@ -211,41 +196,14 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               ],
             ),
           ),
-          body: SerieBuilder(
-              future: _getSeries(),
-              onEdit: (value) {
-                {
-                  Navigator.of(context)
-                      .push(
-                        MaterialPageRoute(
-                          builder: (_) => SerieFormPage(serie: value),
-                          fullscreenDialog: true,
-                        ),
-                      )
-                      .then((_) => setState(() {}));
-                }
-              }),
-
-          /* TabBarView(
+          body: TabBarView(
+            controller: _controller,
             children: [
               // Viendo
-              SerieBuilder(
-                  future: _getSeries(),
-                  onEdit: (value) {
-                    {
-                      Navigator.of(context)
-                          .push(
-                            MaterialPageRoute(
-                              builder: (_) => SerieFormPage(serie: value),
-                              fullscreenDialog: true,
-                            ),
-                          )
-                          .then((_) => setState(() {}));
-                    }
-                  }),
-              // Aplazadas
-              SerieBuilder(
-                future: _getSeries(),
+              Tab(
+                  child: SerieBuilder(
+                databaseService: _databaseService,
+                filtro: const [false, false],
                 onEdit: (value) {
                   {
                     Navigator.of(context)
@@ -258,41 +216,63 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                         .then((_) => setState(() {}));
                   }
                 },
+              )),
+              // Aplazadas
+              Tab(
+                child: SerieBuilder(
+                    databaseService: _databaseService,
+                    filtro: const [false, true],
+                    onEdit: (value) {
+                      {
+                        Navigator.of(context)
+                            .push(
+                              MaterialPageRoute(
+                                builder: (_) => SerieFormPage(serie: value),
+                                fullscreenDialog: true,
+                              ),
+                            )
+                            .then((_) => setState(() {}));
+                      }
+                    }),
               ),
               // Vistas
-              SerieBuilder(
-                future: _getSeries(),
-                onEdit: (value) {
-                  {
-                    Navigator.of(context)
-                        .push(
-                          MaterialPageRoute(
-                            builder: (_) => SerieFormPage(serie: value),
-                            fullscreenDialog: true,
-                          ),
-                        )
-                        .then((_) => setState(() {}));
-                  }
-                },
+              Tab(
+                child: SerieBuilder(
+                    databaseService: _databaseService,
+                    filtro: const [true, false],
+                    onEdit: (value) {
+                      {
+                        Navigator.of(context)
+                            .push(
+                              MaterialPageRoute(
+                                builder: (_) => SerieFormPage(serie: value),
+                                fullscreenDialog: true,
+                              ),
+                            )
+                            .then((_) => setState(() {}));
+                      }
+                    }),
               ),
               // Todas
-              SerieBuilder(
-                future: _getSeries(),
-                onEdit: (value) {
-                  {
-                    Navigator.of(context)
-                        .push(
-                          MaterialPageRoute(
-                            builder: (_) => SerieFormPage(serie: value),
-                            fullscreenDialog: true,
-                          ),
-                        )
-                        .then((_) => setState(() {}));
-                  }
-                },
+              Tab(
+                child: SerieBuilder(
+                    databaseService: _databaseService,
+                    filtro: const [null, null],
+                    onEdit: (value) {
+                      {
+                        Navigator.of(context)
+                            .push(
+                              MaterialPageRoute(
+                                builder: (_) => SerieFormPage(serie: value),
+                                fullscreenDialog: true,
+                              ),
+                            )
+                            .then((_) => setState(() {}));
+                      }
+                    }),
               )
             ],
-          ),*/
+          ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerFloat,
           floatingActionButton: FloatingActionButton(
@@ -311,6 +291,4 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           ),
         ));
   }
-
-  void saveSerie() {}
 }

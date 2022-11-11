@@ -24,6 +24,18 @@ class Serie {
     this.imagen,
   });
 
+  Serie.loading()
+      : this(
+          fechaCreacion: DateTime.now(),
+          nombre: '...',
+          temporada: 0,
+          capitulo: 0,
+          vista: false,
+          aplazada: false,
+        );
+
+  bool get isLoading => nombre == '...';
+
   Map<String, dynamic> toMap() {
     var fecha = fechaCreacion ?? DateTime.now();
     var mili = fecha.millisecondsSinceEpoch;
@@ -91,31 +103,23 @@ Serie _mapToSerie(var map) {
   );
 }
 
-Future<List<Serie>> allSeries(DatabaseService dbs,
-    [bool? vista, bool? aplazada]) async {
+Future countSeries(
+    DatabaseService dbs, int limit, int offset, List filtro) async {
   final db = await dbs.database;
+  final int vista = (filtro[0] == null || !filtro[0]) ? 0 : 1;
+  final int aplazada = (filtro[1] == null || !filtro[1]) ? 0 : 1;
+  late final int? count;
+  late final List<Map<String, dynamic>> maps;
 
-  final int intVista = (vista == null || !vista) ? 0 : 1;
-  final int intAplazada = (aplazada == null || !aplazada) ? 0 : 1;
-
-  final List<Map<String, dynamic>> maps = (vista == null && aplazada == null)
-      ? await db.query('serie', orderBy: 'nombre COLLATE NOCASE ASC')
-      : await db.query('serie',
-          where: 'vista = ? AND aplazada = ?',
-          whereArgs: [intVista, intAplazada],
-          orderBy: 'nombre COLLATE NOCASE ASC');
-
-  return List.generate(maps.length, (i) {
-    return _mapToSerie(maps[i]);
+  await db.transaction((txn) async {
+    count =
+        Sqflite.firstIntValue(await txn.rawQuery('SELECT COUNT(*) FROM serie'));
+    maps = (filtro[0] == null && filtro[1] == null)
+        ? await txn.rawQuery(
+            'SELECT * FROM serie ORDER BY nombre COLLATE NOCASE ASC LIMIT $limit OFFSET $offset')
+        : await txn.rawQuery(
+            'SELECT * FROM serie WHERE vista=$vista AND aplazada=$aplazada ORDER BY nombre COLLATE NOCASE ASC LIMIT $limit OFFSET $offset');
   });
-}
-
-Future countSeries(DatabaseService dbs, int limit, int offset) async {
-  final db = await dbs.database;
-  final count =
-      Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM serie'));
-  final List<Map<String, dynamic>> maps = await db.rawQuery(
-      'SELECT * FROM serie ORDER BY nombre COLLATE NOCASE ASC LIMIT $limit OFFSET $offset');
 
   var list = List.generate(maps.length, (i) {
     return _mapToSerie(maps[i]);

@@ -26,7 +26,7 @@ void setupWindow() {
         height: windowHeight,
       ));
     });
-*/    
+*/
   }
 }
 
@@ -38,11 +38,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Lista Series',
       theme: ThemeData(
-
         primarySwatch: Colors.teal,
       ),
       home: const MyHomePage(title: 'Series'),
     );
   }
 }
-
