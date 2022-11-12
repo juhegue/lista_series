@@ -1,7 +1,7 @@
 // ignore_for_file: constant_identifier_names
-
 import 'dart:io' show Platform;
 import 'dart:convert' as convert;
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart'; // para windows/linux
@@ -63,19 +63,22 @@ class DatabaseService {
       await db.execute(
         'CREATE TABLE serie(id INTEGER PRIMARY KEY AUTOINCREMENT, fecha_creacion INTEGER, nombre TEXT, temporada INTEGER, capitulo INTEGER,vista INTEGER, aplazada INTEGER, imagen BLOB)',
       );
-      // ignore: avoid_print
-      print("DATABASE CREATE v1");
+      if (kDebugMode) {
+        print("DATABASE CREATE v1");
+      }
     },
     2: (Database db) async {
       await db.execute(
         'CREATE TABLE serie(id INTEGER PRIMARY KEY AUTOINCREMENT, fecha_creacion INTEGER, nombre TEXT, temporada INTEGER, capitulo INTEGER,vista INTEGER, aplazada INTEGER, imagen BLOB)',
       );
-      // ignore: avoid_print
-      print("DATABASE CREATE v2");
+      if (kDebugMode) {
+        print("DATABASE CREATE v2");
+      }
     },
     3: (Database db) async {
-      // ignore: avoid_print
-      print("DATABASE CREATE v3");
+      if (kDebugMode) {
+        print("DATABASE CREATE v3");
+      }
     },
   };
 
@@ -109,12 +112,15 @@ class DatabaseService {
           whereArgs: [s.id],
         );
       });
-      // ignore: avoid_print
-      print('from_version_1_to_version_2');
+
+      if (kDebugMode) {
+        print('from_version_1_to_version_2');
+      }
     },
     'from_version_2_to_version_3': (Database db) async {
-      // ignore: avoid_print
-      print('from_version_2_to_version_3');
+      if (kDebugMode) {
+        print('from_version_2_to_version_3');
+      }
     },
   };
 

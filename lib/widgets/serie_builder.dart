@@ -21,6 +21,9 @@ class SerieBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final databaseService = DatabaseService();
+
+    //rellenoDemo(databaseService, 1000);
+
     return ChangeNotifierProvider<Catalog>(
       create: (context) =>
           Catalog(databaseService: databaseService, filtro: filtro),
@@ -153,6 +156,7 @@ Future<SeriePage> fetchPage(
   final series = resul[1];
 
   if (startingIndex > catalogLength) {
+    startingIndex = catalogLength - seriesPerPage;
     return SeriePage(
       series: [],
       startingIndex: startingIndex,

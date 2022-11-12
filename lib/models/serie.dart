@@ -1,5 +1,6 @@
-import 'dart:typed_data';
 import 'dart:convert';
+import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:lista_series/services/database_service.dart';
 
@@ -26,15 +27,12 @@ class Serie {
 
   Serie.loading()
       : this(
-          fechaCreacion: DateTime.now(),
-          nombre: '...',
+          nombre: '???',
           temporada: 0,
           capitulo: 0,
-          vista: false,
-          aplazada: false,
         );
 
-  bool get isLoading => nombre == '...';
+  bool get isLoading => nombre == '???';
 
   Map<String, dynamic> toMap() {
     var fecha = fechaCreacion ?? DateTime.now();
@@ -126,4 +124,26 @@ Future countSeries(
   });
 
   return [count ?? 0, list];
+}
+
+Future rellenoDemo(DatabaseService dbs, int registros) async {
+  List filtro = [null, null];
+  var todas = await countSeries(dbs, registros, 0, filtro);
+  var rng = Random();
+
+  for (int i = 0; i < registros; i++) {
+    if (kDebugMode) {
+      print('Relleno $i');
+    }
+    var serie = todas[1].elementAt(rng.nextInt(9));
+    Serie s = Serie(
+      nombre: "${i.toString().padLeft(3, '0')} $serie.nombre",
+      temporada: serie.temporada,
+      capitulo: serie.capitulo,
+      vista: serie.vista,
+      aplazada: serie.aplazada,
+      imagen: serie.imagen,
+    );
+    s.saveSerie(dbs);
+  }
 }

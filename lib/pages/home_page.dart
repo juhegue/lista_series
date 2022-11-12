@@ -32,7 +32,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       setState(() {
         _selectedIndex = _controller.index;
         if (kDebugMode) {
-          print(_selectedIndex);
+          print('Tab $_selectedIndex');
         }
         // No es necesario, esto sería para forzar a posicionarce en un tab
         //DefaultTabController.of(context)?.animateTo(_selectedIndex);
@@ -79,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     ),
                   ),
                   accountEmail: const Text(
-                    "Lista series",
+                    'https://github.com/juhegue/lista_series',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
@@ -124,6 +124,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     Navigator.pop(context);
                   },
                 ),
+/*                
                 ListTile(
                   leading: const Icon(
                     Icons.backup,
@@ -150,6 +151,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     Navigator.pop(context);
                   },
                 ),
+*/
                 const AboutListTile(
                   icon: Icon(
                     Icons.info,
