@@ -7,6 +7,7 @@ import 'package:lista_series/services/database_service.dart';
 class Serie {
   final int? id;
   final DateTime? fechaCreacion;
+  final DateTime? fechaModificacion;
   final String nombre;
   final int temporada;
   final int capitulo;
@@ -17,6 +18,7 @@ class Serie {
   const Serie({
     this.id,
     this.fechaCreacion,
+    this.fechaModificacion,
     required this.nombre,
     required this.temporada,
     required this.capitulo,
@@ -35,12 +37,15 @@ class Serie {
   bool get isLoading => nombre == '???';
 
   Map<String, dynamic> toMap() {
-    var fecha = fechaCreacion ?? DateTime.now();
-    var mili = fecha.millisecondsSinceEpoch;
+    var ahora =  DateTime.now();
+    var fecha = fechaCreacion ?? ahora;
+    var miliCrea = fecha.millisecondsSinceEpoch;    
+    var miliModi = ahora.millisecondsSinceEpoch;
 
     return {
       'id': id,
-      'fecha_creacion': mili,
+      'fecha_creacion': miliCrea,
+      'fecha_modificacion': miliModi,
       'nombre': nombre,
       'temporada': temporada,
       'capitulo': capitulo,
@@ -52,7 +57,7 @@ class Serie {
 
   @override
   String toString() {
-    return 'Serie [$id] $fechaCreacion $nombre T:$temporada C:$capitulo $vista $aplazada}';
+    return 'Serie [$id] $fechaModificacion $nombre T:$temporada C:$capitulo $vista $aplazada}';
   }
 
   Future<void> saveSerie(DatabaseService dbs) async {
@@ -92,6 +97,7 @@ Serie _mapToSerie(var map) {
   return Serie(
     id: map['id'],
     fechaCreacion: DateTime.fromMillisecondsSinceEpoch(map['fecha_creacion']),
+    fechaModificacion: DateTime.fromMillisecondsSinceEpoch(map['fecha_modificacion']),
     nombre: map['nombre'],
     temporada: map['temporada'],
     capitulo: map['capitulo'],

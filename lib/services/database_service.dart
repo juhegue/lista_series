@@ -16,7 +16,7 @@ class DatabaseService {
   static Database? _database;
 
   static const SECRET_KEY = '0123456789ABCDEF';
-  static const DATABASE_VERSION = 2;
+  static const DATABASE_VERSION = 3;
 
   List<String> tables = ['serie'];
 
@@ -76,6 +76,9 @@ class DatabaseService {
       }
     },
     3: (Database db) async {
+      await db.execute(
+        'CREATE TABLE serie(id INTEGER PRIMARY KEY AUTOINCREMENT, fecha_creacion INTEGER, fecha_modificacion INTEGER, nombre TEXT, temporada INTEGER, capitulo INTEGER,vista INTEGER, aplazada INTEGER, imagen BLOB)',
+      );
       if (kDebugMode) {
         print("DATABASE CREATE v3");
       }
@@ -90,6 +93,9 @@ class DatabaseService {
 
   final Map<String, Function> _onUpgrades = {
     'from_version_1_to_version_2': (Database db) async {
+      if (kDebugMode) {
+        print('from_version_1_to_version_2');
+      }
       // Convierte la imagen Uint8List a Base64
       List<Map<String, dynamic>> maps = [];
       maps = await db.query('serie');
@@ -112,15 +118,20 @@ class DatabaseService {
           whereArgs: [s.id],
         );
       });
-
-      if (kDebugMode) {
-        print('from_version_1_to_version_2');
-      }
     },
     'from_version_2_to_version_3': (Database db) async {
       if (kDebugMode) {
         print('from_version_2_to_version_3');
       }
+      // Añade campo fecha_modificacion y lo rellena con el de creación
+      db.rawQuery('ALTER TABLE serie ADD fecha_modificacion INTEGER');
+
+      List<Map<String, dynamic>> maps = [];
+      maps = await db.query('serie');
+      List.generate(maps.length, (i) {
+        db.rawQuery(
+            "UPDATE serie SET fecha_modificacion=${maps[i]['fecha_creacion']} WHERE id=${maps[i]['id']}");
+      });
     },
   };
 
