@@ -18,8 +18,9 @@ var _kImageBase64 = (defaultTargetPlatform == TargetPlatform.android)
     : kImageBase64Clipboar;
 
 class SerieFormPage extends StatefulWidget {
-  const SerieFormPage({Key? key, this.serie}) : super(key: key);
   final Serie? serie;
+  final Uint8List? imagen;
+  const SerieFormPage({Key? key, this.serie, this.imagen}) : super(key: key);
 
   @override
   State<SerieFormPage> createState() => _SerieFormPageState();
@@ -45,7 +46,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
     super.initState();
 
     _databaseService = DatabaseService();
-
+    _imagen = widget.imagen;
     if (widget.serie != null) {
       _nombreController.text = widget.serie!.nombre;
       _temporada = widget.serie!.temporada;

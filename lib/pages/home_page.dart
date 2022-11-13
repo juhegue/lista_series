@@ -1,6 +1,9 @@
+import 'dart:io';
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:lista_series/services/database_service.dart';
 import 'package:lista_series/models/serie.dart';
 import 'package:lista_series/pages/serie_form_page.dart';
@@ -22,6 +25,33 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   late final DatabaseService _databaseService;
   late TabController _controller;
   int _selectedIndex = 0;
+  late StreamSubscription _intentDataStreamSubscription;
+  List<SharedMediaFile>? _sharedFiles;
+  Uint8List? imagenShare;
+
+  void addSerieImagen(Uint8List imagenShare) {
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (_) => SerieFormPage(imagen: imagenShare),
+            fullscreenDialog: true,
+          ),
+        )
+        .then((_) => setState(() {}));
+  }
+
+  void leeFichero(shared) async {
+    try {
+      if (shared.isNotEmpty) {
+        String path = shared[0].path;
+        if (path != '') {
+          File f = File(path);
+          imagenShare = await f.readAsBytes();
+          addSerieImagen(imagenShare!);
+        }
+      }
+    } on Exception catch (_) {}
+  }
 
   @override
   void initState() {
@@ -39,6 +69,26 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         //DefaultTabController.of(context)?.animateTo(_selectedIndex);
       });
     });
+
+    if (Platform.isAndroid || Platform.isIOS) {
+      // For sharing images coming from outside the app while the app is in the memory
+      _intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream()
+          .listen((List<SharedMediaFile> value) {
+        setState(() {
+          _sharedFiles = value;
+          leeFichero(value);
+        });
+      }, onError: (err) {});
+
+      // For sharing images coming from outside the app while the app is closed
+      ReceiveSharingIntent.getInitialMedia()
+          .then((List<SharedMediaFile> value) {
+        setState(() {
+          _sharedFiles = value;
+          leeFichero(value);
+        });
+      });
+    }
   }
 
   @override
