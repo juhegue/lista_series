@@ -119,7 +119,7 @@ Future countSeries(
             'SELECT * FROM serie WHERE vista=$vista AND aplazada=$aplazada ORDER BY nombre COLLATE NOCASE ASC LIMIT $limit OFFSET $offset');
   });
 
-  var list = List.generate(maps.length, (i) {
+  List<Serie> list = List.generate(maps.length, (i) {
     return _mapToSerie(maps[i]);
   });
 

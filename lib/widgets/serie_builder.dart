@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -6,6 +7,8 @@ import 'package:lista_series/models/serie.dart';
 import 'package:lista_series/widgets/outlined_text.dart';
 import 'package:lista_series/widgets/dialog.dart';
 import 'package:lista_series/services/database_service.dart';
+
+const int seriesPerPage = 100;
 
 class SerieBuilder extends StatelessWidget {
   final DatabaseService databaseService;
@@ -41,6 +44,8 @@ class _SerieBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var cachePages = false; // para refrescar cuando se edita
+
     return Selector<Catalog, int?>(
       selector: (context, catalog) => catalog.itemCount,
       builder: (context, itemCount, child) => ListView.builder(
@@ -48,7 +53,8 @@ class _SerieBuilder extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 18),
         itemBuilder: (context, index) {
           var catalog = Provider.of<Catalog>(context);
-          var serie = catalog.getByIndex(index);
+          var serie = catalog.getByIndex(index, cachePages);
+          cachePages = true;
 
           if (serie.isLoading) {
             return const LoadingSerieCard();
@@ -69,7 +75,7 @@ class Catalog extends ChangeNotifier {
     required this.filtro,
   });
 
-  static const maxCacheDistance = 100;
+  static const maxCacheDistance = seriesPerPage * 2;
 
   final Map<int, SeriePage> _pages = {};
 
@@ -85,14 +91,12 @@ class Catalog extends ChangeNotifier {
     super.dispose();
   }
 
-  Serie getByIndex(int index) {
-    var startingIndex = (index ~/ seriesPerPage) * seriesPerPage;
+  Serie getByIndex(int index, bool cachePages) {
+    int startingIndex = (index ~/ seriesPerPage) * seriesPerPage;
 
-    if (_pages.containsKey(startingIndex)) {
-      try {
-        var item = _pages[startingIndex]!.series[index - startingIndex];
-        return item;
-      } on Exception catch (_) {}
+    if (_pages.containsKey(startingIndex) && cachePages) {
+      Serie serie = _pages[startingIndex]!.series[index - startingIndex];
+      return serie;
     }
 
     _fetchPage(startingIndex, filtro);
@@ -134,8 +138,6 @@ class Catalog extends ChangeNotifier {
   }
 }
 
-const int seriesPerPage = 20;
-
 class SeriePage {
   final List<Serie> series;
   final int startingIndex;
@@ -155,11 +157,17 @@ Future<SeriePage> fetchPage(
   final catalogLength = resul[0];
   final series = resul[1];
 
+  if (kDebugMode) {
+    print('fetchPage: $startingIndex $catalogLength');
+  }
   if (startingIndex > catalogLength) {
-    startingIndex = catalogLength - seriesPerPage;
+    if (kDebugMode) {
+      print('final');
+    }
     return SeriePage(
       series: [],
-      startingIndex: startingIndex,
+      startingIndex: catalogLength - seriesPerPage,
+      //startingIndex: startingIndex,
       hasNext: false,
     );
   }
