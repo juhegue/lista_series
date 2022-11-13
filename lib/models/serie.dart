@@ -110,8 +110,10 @@ Future countSeries(
   late final List<Map<String, dynamic>> maps;
 
   await db.transaction((txn) async {
-    count =
-        Sqflite.firstIntValue(await txn.rawQuery('SELECT COUNT(*) FROM serie'));
+    count = (filtro[0] == null && filtro[1] == null)
+        ? Sqflite.firstIntValue(await txn.rawQuery('SELECT COUNT(*) FROM serie'))
+        : Sqflite.firstIntValue(await txn.rawQuery('SELECT COUNT(*) FROM serie WHERE vista=$vista AND aplazada=$aplazada'));
+        
     maps = (filtro[0] == null && filtro[1] == null)
         ? await txn.rawQuery(
             'SELECT * FROM serie ORDER BY nombre COLLATE NOCASE ASC LIMIT $limit OFFSET $offset')
