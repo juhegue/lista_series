@@ -75,7 +75,7 @@ class Catalog extends ChangeNotifier {
     required this.filtro,
   });
 
-  static const maxCacheDistance = seriesPerPage * 2;
+  static const maxCacheDistance = seriesPerPage * 3;
 
   final Map<int, SeriePage> _pages = {};
 
@@ -166,8 +166,7 @@ Future<SeriePage> fetchPage(
     }
     return SeriePage(
       series: [],
-      startingIndex: catalogLength - seriesPerPage,
-      //startingIndex: startingIndex,
+      startingIndex: startingIndex,
       hasNext: false,
     );
   }

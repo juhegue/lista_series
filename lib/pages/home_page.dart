@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:lista_series/services/database_service.dart';
+import 'package:lista_series/models/serie.dart';
 import 'package:lista_series/pages/serie_form_page.dart';
 import 'package:lista_series/widgets/serie_builder.dart';
 import 'package:lista_series/util/backu_restore.dart';
@@ -52,6 +53,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         : showMsgDialog(context, title, ko);
   }
 
+  void msgAviso(String title, String msg) {
+    showMsgDialog(context, title, msg);
+  }
+
   Future<void> accionDb(Function accion, Function result, String title,
       String ok, String ko) async {
     if (await Permission.storage.request().isPermanentlyDenied) {
@@ -59,6 +64,16 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     }
     bool r = await accion(_databaseService);
     result(r, title, ok, ko);
+  }
+
+  Future<void> sumario() async {
+    var viendo = await countSeries(_databaseService, 1, 0, [false, false]);
+    var aplazadas = await countSeries(_databaseService, 1, 0, [false, true]);
+    var vistas = await countSeries(_databaseService, 1, 0, [true, false]);
+    var todas = await countSeries(_databaseService, 1, 0, [null, null]);
+    String msg =
+        'Viendo: ${viendo[0]}\nAplazadas: ${aplazadas[0]}\nVistas: ${vistas[0]}\nTodas: ${todas[0]}';
+    msgAviso('Sumario', msg);
   }
 
   @override
@@ -122,6 +137,15 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     accionDb(restoreDb, msgResultado, 'Restaurar Backup',
                         'Completada con éxito.', 'Acción no realizada.');
                     Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
+                    Icons.add_circle_outline,
+                  ),
+                  title: const Text('Sumario'),
+                  onTap: () {
+                    sumario();
                   },
                 ),
 /*                
