@@ -234,7 +234,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     Icons.local_play,
                   ),
                   applicationName: 'Lista Serie',
-                  applicationVersion: '0.1.beta',
+                  applicationVersion: '0.0.1',
                   applicationLegalese: '© 2022 Juhegue',
                   aboutBoxChildren: [
                     Text(
