@@ -160,12 +160,12 @@ Future<SeriePage> fetchPage(
   if (kDebugMode) {
     print('fetchPage: $startingIndex $catalogLength');
   }
-  if (startingIndex > catalogLength) {
+  if ((startingIndex > catalogLength) || (catalogLength==0)) {
     if (kDebugMode) {
       print('final');
     }
     return SeriePage(
-      series: [],
+      series: [Serie.loading()],
       startingIndex: startingIndex,
       hasNext: false,
     );
