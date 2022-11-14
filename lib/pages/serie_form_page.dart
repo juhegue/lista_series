@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, TargetPlatform;
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pasteboard/pasteboard.dart';
 import 'package:lista_series/widgets/incrementa_decrementa.dart';
@@ -16,6 +17,19 @@ import 'package:lista_series/widgets/dialog.dart';
 var _kImageBase64 = (defaultTargetPlatform == TargetPlatform.android)
     ? kImageBase64Galeria
     : kImageBase64Clipboar;
+
+class CapitalizeTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    return TextEditingValue(
+      text: (newValue.text.length == 1)
+          ? newValue.text.toUpperCase()
+          : newValue.text,
+      selection: newValue.selection,
+    );
+  }
+}
 
 class SerieFormPage extends StatefulWidget {
   final Serie? serie;
@@ -60,6 +74,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
   @override
   void dispose() {
     //_databaseService.close();
+    _nombreController.dispose();
     super.dispose();
   }
 
@@ -120,7 +135,11 @@ class _SerieFormPageState extends State<SerieFormPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   TextField(
+                    autofocus: true,
                     controller: _nombreController,
+                    inputFormatters: [
+                      CapitalizeTextFormatter(),
+                    ],
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       hintText: 'Introduzca el nombre de la serie',
@@ -161,7 +180,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
                   ),
                   const SizedBox(height: 4.0),
                   const Text(
-                    'Esta vista',
+                    'Vista',
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.w500,
@@ -179,7 +198,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
                   ),
                   const SizedBox(height: 4.0),
                   const Text(
-                    'Esta aplazada',
+                    'Aplazada',
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.w500,
