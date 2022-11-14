@@ -143,7 +143,7 @@ Future rellenoDemo(DatabaseService dbs, int registros) async {
     if (kDebugMode) {
       print('Relleno $i');
     }
-    var serie = todas[1].elementAt(rng.nextInt(9));
+    var serie = todas[1].elementAt(rng.nextInt(todas[0]));
     Serie s = Serie(
       nombre: "${i.toString().padLeft(3, '0')} $serie.nombre",
       temporada: serie.temporada,
