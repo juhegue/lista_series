@@ -213,13 +213,24 @@ class _SerieFormPageState extends State<SerieFormPage> {
                     },
                   ),
                   const SizedBox(height: 4.0),
-                  const Text(
-                    'Imagen',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  Row(
+                    children: const [
+                      Text(
+                        'Imagen',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(width: 4.0),
+                      Tooltip(
+                        message: 'Puedes asignar una imagen compartiendo esta y eligiendo esta App como destino.',
+                        showDuration: Duration(seconds: 5),
+                        child: Icon(Icons.help, size: 18.0), 
+                      ),
+                    ],                    
                   ),
+                  const SizedBox(height: 2.0),
                   MaterialButton(
                     onPressed: () async {
                       if (defaultTargetPlatform == TargetPlatform.android) {
