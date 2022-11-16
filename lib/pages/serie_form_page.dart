@@ -218,7 +218,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
                       Tooltip(
                           message:
                               'Puedes asignar una imagen compartiendo esta y eligiendo esta App como destino.',
-                          showDuration: Duration(seconds: 5),                              
+                          showDuration: Duration(seconds: 5),
                           child: Text(
                             'Imagen',
                             style: TextStyle(
@@ -261,25 +261,6 @@ class _SerieFormPageState extends State<SerieFormPage> {
                         height: 45.0,
                         width: 150.0,
                         child: ElevatedButton(
-                          onPressed: (_nombreController.text != '')
-                              ? () => _saveSerie()
-                              : null,
-                          style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all<Color>(Colors.green),
-                          ),
-                          child: const Text(
-                            'Grabar',
-                            style: TextStyle(
-                              fontSize: 16.0,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 45.0,
-                        width: 150.0,
-                        child: ElevatedButton(
                           onPressed: (serieId != null)
                               ? () => showConfigDialog(
                                     context,
@@ -299,7 +280,26 @@ class _SerieFormPageState extends State<SerieFormPage> {
                             ),
                           ),
                         ),
-                      )
+                      ),
+                      SizedBox(
+                        height: 45.0,
+                        width: 150.0,
+                        child: ElevatedButton(
+                          onPressed: (_nombreController.text != '')
+                              ? () => _saveSerie()
+                              : null,
+                          style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all<Color>(Colors.green),
+                          ),
+                          child: const Text(
+                            'Grabar',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ])));
