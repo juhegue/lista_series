@@ -134,7 +134,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   TextField(
-                    autofocus: true,
+                    autofocus: (serieId == null) ? true : false,
                     controller: _nombreController,
                     inputFormatters: [
                       CapitalizeTextFormatter(),
