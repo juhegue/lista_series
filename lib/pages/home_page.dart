@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:lista_series/services/database_service.dart';
@@ -53,6 +54,11 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     } on Exception catch (_) {}
   }
 
+  void initialization() async {
+    await Future.delayed(const Duration(seconds: 3));
+    FlutterNativeSplash.remove();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -89,6 +95,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         });
       });
     }
+
+    initialization();
   }
 
   @override

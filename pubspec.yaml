@@ -49,11 +49,21 @@ dependencies:
   url_launcher: ^6.1.6
   provider: ^6.0.2
   receive_sharing_intent: ^1.4.5
+  flutter_native_splash: 
   window_size:
     git:
       url: https://github.com/google/flutter-desktop-embedding.git
       path: plugins/window_size
-  
+
+flutter_native_splash:
+  color: "#9be5f9"
+  image: assets/images/splash_serie.png
+  android_12:
+    color: "#9be5f9"
+    image: assets/images/splash_serie.png
+# Hay que ejecutar:
+# flutter pub run flutter_native_splash:create
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -78,6 +88,7 @@ flutter:
 
   assets:
     - assets/images/serie.png
+    - assets/images/splash_serie.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -109,3 +120,4 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
