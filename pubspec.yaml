@@ -56,10 +56,10 @@ dependencies:
       path: plugins/window_size
 
 flutter_native_splash:
-  color: "#9be5f9"
+  color: "#009589"
   image: assets/images/splash_serie.png
   android_12:
-    color: "#9be5f9"
+    color: "#009589"
     image: assets/images/splash_serie.png
 # Hay que ejecutar:
 # flutter pub run flutter_native_splash:create
