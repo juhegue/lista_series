@@ -251,7 +251,7 @@ class SerieCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                          'Temporada: ${serie.temporada}\nCapítulo: ${serie.capitulo}\n${DateFormat("dd/MM/yyyy HH:MM").format(serie.fechaModificacion!)}'),
+                          'Temporada: ${serie.temporada}\nCapítulo: ${serie.capitulo}\n${DateFormat("dd/MM/yyyy hh:mm").format(serie.fechaModificacion!)}'),
                     ],
                   ),
                 ],
