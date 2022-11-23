@@ -23,7 +23,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   var refreshKey = GlobalKey<RefreshIndicatorState>();
-  late final DatabaseService _databaseService;
+  late DatabaseService _databaseService;
   late TabController _controller;
   int _selectedIndex = 0;
   late StreamSubscription _intentDataStreamSubscription;
@@ -105,23 +105,34 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void msgResultado(bool resultado, String title, String ok, String ko) {
+  void msgResultado(bool resultado, String title, String ok, String ko) async {
     (resultado)
-        ? showMsgDialog(context, title, ok)
-        : showMsgDialog(context, title, ko);
+        ? await showMsgDialog(context, title, ok)
+        : await showMsgDialog(context, title, ko);
   }
 
   void msgAviso(String title, String msg) {
     showMsgDialog(context, title, msg);
   }
 
-  Future<void> accionDb(Function accion, Function result, String title,
-      String ok, String ko) async {
+  Future<void> accionDb(bool close, Function accion, Function result,
+      String title, String ok, String ko) async {
     if (await Permission.storage.request().isPermanentlyDenied) {
       await openAppSettings();
     }
+
+    if (close) {
+      _databaseService.close();
+    }
+
     bool r = await accion(_databaseService);
-    result(r, title, ok, ko);
+    await result(r, title, ok, ko);
+
+    if (close) {
+      _databaseService = DatabaseService();
+    }
+
+    setState(() {});
   }
 
   Future<void> sumario() async {
@@ -178,6 +189,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   title: const Text('Realizar backup'),
                   onTap: () {
                     accionDb(
+                        true,
                         backupDb,
                         msgResultado,
                         'Backup',
@@ -192,18 +204,14 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   ),
                   title: const Text('Restaurar backup'),
                   onTap: () {
-                    accionDb(restoreDb, msgResultado, 'Restaurar Backup',
-                        'Completada con éxito.', 'Acción no realizada.');
+                    accionDb(
+                      true, 
+                      restoreDb, 
+                      msgResultado, 
+                      'Restaurar Backup',
+                      'Completada con éxito.', 
+                      'Acción no realizada.');
                     Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.add_circle_outline,
-                  ),
-                  title: const Text('Sumario'),
-                  onTap: () {
-                    sumario();
                   },
                 ),
 /*                
@@ -214,6 +222,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   title: const Text('Realizar json backup'),
                   onTap: () {
                     accionDb(
+                        false,
                         backupJson,
                         msgResultado,
                         'Backup json',
@@ -228,12 +237,26 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   ),
                   title: const Text('Restaurar json backup'),
                   onTap: () {
-                    accionDb(restoreJson, msgResultado, 'Restaurar Backup json',
-                        'Completada con éxito.', 'Acción no realizada.');
+                    accionDb(
+                        false,
+                        restoreJson,
+                        msgResultado,
+                        'Restaurar Backup json',
+                        'Completada con éxito.',
+                        'Acción no realizada.');
                     Navigator.pop(context);
                   },
                 ),
-*/
+*/                
+                ListTile(
+                  leading: const Icon(
+                    Icons.add_circle_outline,
+                  ),
+                  title: const Text('Sumario'),
+                  onTap: () {
+                    sumario();
+                  },
+                ),
                 const AboutListTile(
                   icon: Icon(
                     Icons.info,

@@ -1,5 +1,8 @@
 // ignore_for_file: constant_identifier_names
+
 import 'dart:io';
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
@@ -8,7 +11,12 @@ import 'package:lista_series/services/database_service.dart';
 
 const ENCRYPT_DB = false;
 
-Future<String> getDataFile(File file) async {
+Future<Uint8List> getBytesFile(File file) async {
+  final data = await file.readAsBytes();
+  return data;
+}
+
+Future<String> getStringFile(File file) async {
   final data = await file.readAsString();
   return data;
 }
@@ -47,13 +55,16 @@ Future<bool> restoreJson(DatabaseService databaseRepository) async {
   final File? fileBackup = await getFileStorage();
 
   if (fileBackup != null) {
-    final backup = await getDataFile(fileBackup);
-    await databaseRepository.clearAllTables();
-    await databaseRepository.restoreBackup(backup, isEncrypted: ENCRYPT_DB);
-    return true;
-  } else {
-    return false;
+    try {
+      final backup = await getStringFile(fileBackup);
+      await databaseRepository.clearAllTables();
+      final List json =
+          databaseRepository.jsonBackup(backup, isEncrypted: ENCRYPT_DB);
+      await databaseRepository.restoreBackup(json);
+      return true;
+    } on Exception catch (_) {}
   }
+  return false;
 }
 
 Future<bool> backupDb(DatabaseService databaseRepository) async {
@@ -78,9 +89,15 @@ Future<bool> restoreDb(DatabaseService databaseRepository) async {
   final String db = await databaseRepository.databasePath();
 
   if (fileBackup != null) {
-    await fileBackup.copy(db);
-    return true;
-  } else {
-    return false;
+    try {
+      final Uint8List backup = await getBytesFile(fileBackup);
+      final String txt = utf8.decode(backup.sublist(0, 6));
+      if (txt != 'SQLite') {
+        throw Exception();
+      }
+      await fileBackup.copy(db);
+      return true;
+    } on Exception catch (_) {}
   }
+  return false;
 }

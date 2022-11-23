@@ -55,6 +55,7 @@ class DatabaseService {
   Future<void> close() async {
     Database? db = _database;
     (db == null) ? null : await _database!.close();
+    _database = null;
   }
 
   Future<void> _onCreate(Database db, int version) => _onCreates[version]!(db);
@@ -169,17 +170,21 @@ class DatabaseService {
     }
   }
 
-  Future<void> restoreBackup(String backup, {bool isEncrypted = false}) async {
-    var dbs = await database;
-
-    Batch batch = dbs.batch();
-
+  List jsonBackup(String backup, {bool isEncrypted = false}) {
     var key = encrypt.Key.fromUtf8(SECRET_KEY);
     var iv = encrypt.IV.fromLength(16);
     var encrypter = encrypt.Encrypter(encrypt.AES(key));
 
     List json = convert
         .jsonDecode(isEncrypted ? encrypter.decrypt64(backup, iv: iv) : backup);
+
+    return json;
+  }
+
+  Future<void> restoreBackup(List json) async {
+    var dbs = await database;
+
+    Batch batch = dbs.batch();
 
     for (var i = 0; i < json[0].length; i++) {
       for (var k = 0; k < json[1][i].length; k++) {
