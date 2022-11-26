@@ -128,7 +128,9 @@ class _SerieFormPageState extends State<SerieFormPage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Añadir nueva serie'),
+          title: Text((widget.serie == null)
+              ? 'Añadir nueva serie'
+              : 'Modificar serie'),
           backgroundColor: Colors.teal,
           centerTitle: true,
         ),
