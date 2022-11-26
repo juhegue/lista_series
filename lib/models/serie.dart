@@ -11,6 +11,7 @@ class Serie {
   final String nombre;
   final int temporada;
   final int capitulo;
+  final int valoracion;
   final bool? vista;
   final bool? aplazada;
   final Uint8List? imagen;
@@ -22,6 +23,7 @@ class Serie {
     required this.nombre,
     required this.temporada,
     required this.capitulo,
+    required this.valoracion,
     this.vista,
     this.aplazada,
     this.imagen,
@@ -32,14 +34,15 @@ class Serie {
           nombre: '???',
           temporada: 0,
           capitulo: 0,
+          valoracion: 0,
         );
 
   bool get isLoading => nombre == '???';
 
   Map<String, dynamic> toMap() {
-    var ahora =  DateTime.now();
+    var ahora = DateTime.now();
     var fecha = fechaCreacion ?? ahora;
-    var miliCrea = fecha.millisecondsSinceEpoch;    
+    var miliCrea = fecha.millisecondsSinceEpoch;
     var miliModi = ahora.millisecondsSinceEpoch;
 
     return {
@@ -49,6 +52,7 @@ class Serie {
       'nombre': nombre,
       'temporada': temporada,
       'capitulo': capitulo,
+      'valoracion': valoracion,
       'vista': (vista ?? false) ? 1 : 0,
       'aplazada': (aplazada ?? false) ? 1 : 0,
       'imagen': (imagen == null) ? null : base64.encode(imagen!),
@@ -57,7 +61,7 @@ class Serie {
 
   @override
   String toString() {
-    return 'Serie [$id] $fechaModificacion $nombre T:$temporada C:$capitulo $vista $aplazada}';
+    return 'Serie [$id] $fechaModificacion $nombre T:$temporada C:$capitulo $valoracion $vista $aplazada}';
   }
 
   Future<void> saveSerie(DatabaseService dbs) async {
@@ -97,10 +101,12 @@ Serie _mapToSerie(var map) {
   return Serie(
     id: map['id'],
     fechaCreacion: DateTime.fromMillisecondsSinceEpoch(map['fecha_creacion']),
-    fechaModificacion: DateTime.fromMillisecondsSinceEpoch(map['fecha_modificacion']),
+    fechaModificacion:
+        DateTime.fromMillisecondsSinceEpoch(map['fecha_modificacion']),
     nombre: map['nombre'],
     temporada: map['temporada'],
     capitulo: map['capitulo'],
+    valoracion: map['valoracion'],
     vista: (map['vista'] == 1) ? true : false,
     aplazada: (map['aplazada'] == 1) ? true : false,
     imagen: (map['imagen'] == null) ? null : base64.decode(map['imagen']),
@@ -117,9 +123,11 @@ Future countSeries(
 
   await db.transaction((txn) async {
     count = (filtro[0] == null && filtro[1] == null)
-        ? Sqflite.firstIntValue(await txn.rawQuery('SELECT COUNT(*) FROM serie'))
-        : Sqflite.firstIntValue(await txn.rawQuery('SELECT COUNT(*) FROM serie WHERE vista=$vista AND aplazada=$aplazada'));
-        
+        ? Sqflite.firstIntValue(
+            await txn.rawQuery('SELECT COUNT(*) FROM serie'))
+        : Sqflite.firstIntValue(await txn.rawQuery(
+            'SELECT COUNT(*) FROM serie WHERE vista=$vista AND aplazada=$aplazada'));
+
     maps = (filtro[0] == null && filtro[1] == null)
         ? await txn.rawQuery(
             'SELECT * FROM serie ORDER BY nombre COLLATE NOCASE ASC LIMIT $limit OFFSET $offset')
@@ -148,6 +156,7 @@ Future rellenoDemo(DatabaseService dbs, int registros) async {
       nombre: "${i.toString().padLeft(3, '0')} $serie.nombre",
       temporada: serie.temporada,
       capitulo: serie.capitulo,
+      valoracion: serie.valoracion,
       vista: serie.vista,
       aplazada: serie.aplazada,
       imagen: serie.imagen,

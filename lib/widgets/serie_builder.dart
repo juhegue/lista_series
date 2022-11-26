@@ -160,7 +160,7 @@ Future<SeriePage> fetchPage(
   if (kDebugMode) {
     print('fetchPage: $startingIndex $catalogLength');
   }
-  if ((startingIndex > catalogLength) || (catalogLength==0)) {
+  if ((startingIndex > catalogLength) || (catalogLength == 0)) {
     if (kDebugMode) {
       print('final');
     }
@@ -250,8 +250,22 @@ class SerieCard extends StatelessWidget {
                   const SizedBox(height: 4.0),
                   Row(
                     children: [
-                      Text(
-                          'Temporada: ${serie.temporada}\nCapítulo: ${serie.capitulo}\n${DateFormat("dd/MM/yyyy HH:mm").format(serie.fechaModificacion!)}'),
+                      RichText(
+                        text: TextSpan(                          
+                          style: const TextStyle(color: Colors.black),
+                          children: <TextSpan>[
+                            TextSpan(
+                                text:
+                                    'Temporada: ${serie.temporada}\nCapítulo: ${serie.capitulo}\n${DateFormat("dd/MM/yyyy HH:mm").format(serie.fechaModificacion!)}',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.normal)),
+                            TextSpan(
+                                text: '\t\t\t${(serie.valoracion>0)?serie.valoracion:""}',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, color: Colors.teal)),
+                          ],
+                        ),
+                      )
                     ],
                   ),
                 ],

@@ -16,7 +16,7 @@ class DatabaseService {
   static Database? _database;
 
   static const SECRET_KEY = '0123456789ABCDEF';
-  static const DATABASE_VERSION = 3;
+  static const DATABASE_VERSION = 4;
 
   List<String> tables = ['serie'];
 
@@ -84,6 +84,14 @@ class DatabaseService {
         print("DATABASE CREATE v3");
       }
     },
+    4: (Database db) async {
+      await db.execute(
+        'CREATE TABLE serie(id INTEGER PRIMARY KEY AUTOINCREMENT, fecha_creacion INTEGER, fecha_modificacion INTEGER, nombre TEXT, temporada INTEGER, capitulo INTEGER, valoracion INTEGER, vista INTEGER, aplazada INTEGER, imagen BLOB)',
+      );
+      if (kDebugMode) {
+        print("DATABASE CREATE v3");
+      }
+    },
   };
 
   Future<void> onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -107,7 +115,8 @@ class DatabaseService {
                 DateTime.fromMillisecondsSinceEpoch(maps[i]['fecha_creacion']),
             nombre: maps[i]['nombre'],
             temporada: maps[i]['temporada'],
-            capitulo: maps[i]['capitulo'],
+            capitulo: maps[i]['capitulo'],            
+            valoracion: 0,  //  Añadido para evitar el error: missing_required_argument
             vista: (maps[i]['vista'] == 1) ? true : false,
             aplazada: (maps[i]['aplazada'] == 1) ? true : false,
             imagen: maps[i]['imagen']);
@@ -133,6 +142,13 @@ class DatabaseService {
         db.rawQuery(
             "UPDATE serie SET fecha_modificacion=${maps[i]['fecha_creacion']} WHERE id=${maps[i]['id']}");
       });
+    },
+    'from_version_3_to_version_4': (Database db) async {
+      if (kDebugMode) {
+        print('from_version_3_to_version_4');
+      }
+      // Añade campo valoracion
+      db.rawQuery('ALTER TABLE serie ADD valoracion INTEGER DEFAULT 0');
     },
   };
 

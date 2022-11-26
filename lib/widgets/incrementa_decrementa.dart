@@ -28,24 +28,26 @@ class IncrementaDecrementa extends StatelessWidget {
         const SizedBox(height: 8.0),
         Row(
           children: [
-            SizedBox(
-              height: 60.0,
-              width: 80.0,
-              child: TextButton(
-                child: const Icon(Icons.add),
-                onPressed: () => onIncrementa(),
+            Expanded(
+                child: Row(children: [
+              SizedBox(
+                height: 60.0,
+                width: 160.0,
+                child: TextButton(
+                  child: const Icon(Icons.add),
+                  onPressed: () => onIncrementa(),
+                ),
               ),
-            ),
-            const SizedBox(width: 30.0),
-            SizedBox(
-              height: 60.0,
-              width: 80.0,
-              child: TextButton(
-                child: const Icon(Icons.remove),
-                onPressed: () => onDecrementa(),
+              const SizedBox(width: 60.0),
+              SizedBox(
+                height: 60.0,
+                width: 160.0,
+                child: TextButton(
+                  child: const Icon(Icons.remove),
+                  onPressed: () => onDecrementa(),
+                ),
               ),
-            ),
-            const SizedBox(width: 60.0),
+            ])),
             Container(
               padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(

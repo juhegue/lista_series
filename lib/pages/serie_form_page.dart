@@ -12,6 +12,7 @@ import 'package:lista_series/models/serie.dart';
 import 'package:lista_series/constants.dart'
     show kImageBase64Galeria, kImageBase64Clipboar;
 import 'package:lista_series/widgets/dialog.dart';
+import 'package:lista_series/widgets/valorar_slider.dart';
 
 var _kImageBase64 = (defaultTargetPlatform == TargetPlatform.android)
     ? kImageBase64Galeria
@@ -45,13 +46,14 @@ class _SerieFormPageState extends State<SerieFormPage> {
   final ImagePicker picker = ImagePicker();
   int _temporada = 1;
   int _capitulo = 0;
+  int _valoracion = 0;
   Uint8List? _imagen;
   bool _vista = false;
   bool _aplazada = false;
-  int? serieId;
+  int? _serieId;
 
   void getSerieId() {
-    serieId = (widget.serie == null) ? null : widget.serie?.id;
+    _serieId = (widget.serie == null) ? null : widget.serie?.id;
   }
 
   @override
@@ -64,6 +66,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
       _nombreController.text = widget.serie!.nombre;
       _temporada = widget.serie!.temporada;
       _capitulo = widget.serie!.capitulo;
+      _valoracion = widget.serie!.valoracion;
       _imagen = widget.serie!.imagen;
       _vista = widget.serie!.vista!;
       _aplazada = widget.serie!.aplazada!;
@@ -79,10 +82,11 @@ class _SerieFormPageState extends State<SerieFormPage> {
 
   void _saveSerie() {
     Serie serie = Serie(
-      id: serieId,
+      id: _serieId,
       nombre: _nombreController.text,
       temporada: _temporada,
       capitulo: _capitulo,
+      valoracion: _valoracion,
       vista: _vista,
       aplazada: _aplazada,
       imagen: _imagen,
@@ -134,7 +138,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   TextField(
-                    autofocus: (serieId == null) ? true : false,
+                    autofocus: (_serieId == null) ? true : false,
                     controller: _nombreController,
                     inputFormatters: [
                       CapitalizeTextFormatter(),
@@ -178,6 +182,16 @@ class _SerieFormPageState extends State<SerieFormPage> {
                     },
                   ),
                   const SizedBox(height: 4.0),
+                  ValorarSlider(
+                    max: 10.0,
+                    valor: _valoracion.toDouble(),
+                    onChanged: (value) {
+                      setState(() {
+                        _valoracion = value.toInt();
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 4.0),
                   const Text(
                     'Vista',
                     style: TextStyle(
@@ -212,7 +226,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
                       });
                     },
                   ),
-                  const SizedBox(height: 4.0),
+                  const SizedBox(height: 16.0),
                   Row(
                     children: const [
                       Tooltip(
@@ -261,7 +275,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
                         height: 45.0,
                         width: 150.0,
                         child: ElevatedButton(
-                          onPressed: (serieId != null)
+                          onPressed: (_serieId != null)
                               ? () => showConfigDialog(
                                     context,
                                     'Borrar Serie',
