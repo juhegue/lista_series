@@ -251,7 +251,7 @@ class SerieCard extends StatelessWidget {
                   Row(
                     children: [
                       RichText(
-                        text: TextSpan(                          
+                        text: TextSpan(
                           style: const TextStyle(color: Colors.black),
                           children: <TextSpan>[
                             TextSpan(
@@ -260,9 +260,12 @@ class SerieCard extends StatelessWidget {
                                 style: const TextStyle(
                                     fontWeight: FontWeight.normal)),
                             TextSpan(
-                                text: '\t\t\t${(serie.valoracion>0)?serie.valoracion:""}',
+                                text:
+                                    '\t\t\t${(serie.valoracion > 0) ? serie.valoracion : ""}',
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold, color: Colors.teal)),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 24,
+                                    color: Colors.teal)),
                           ],
                         ),
                       )

@@ -204,13 +204,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   ),
                   title: const Text('Restaurar backup'),
                   onTap: () {
-                    accionDb(
-                      true, 
-                      restoreDb, 
-                      msgResultado, 
-                      'Restaurar Backup',
-                      'Completada con éxito.', 
-                      'Acción no realizada.');
+                    accionDb(true, restoreDb, msgResultado, 'Restaurar Backup',
+                        'Completada con éxito.', 'Acción no realizada.');
                     Navigator.pop(context);
                   },
                 ),
@@ -247,7 +242,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     Navigator.pop(context);
                   },
                 ),
-*/                
+*/
                 ListTile(
                   leading: const Icon(
                     Icons.add_circle_outline,

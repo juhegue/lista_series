@@ -132,190 +132,194 @@ class _SerieFormPageState extends State<SerieFormPage> {
           backgroundColor: Colors.teal,
           centerTitle: true,
         ),
-        body: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  TextField(
-                    autofocus: (_serieId == null) ? true : false,
-                    controller: _nombreController,
-                    inputFormatters: [
-                      CapitalizeTextFormatter(),
-                    ],
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Introduzca el nombre de la serie',
-                    ),
-                    onChanged: (text) {
-                      setState(() {});
-                    },
-                  ),
-                  const SizedBox(height: 10.0),
-                  IncrementaDecrementa(
-                    titulo: 'Temporada',
-                    valor: _temporada.toDouble(),
-                    onIncrementa: () {
-                      setState(() {
-                        _temporada++;
-                      });
-                    },
-                    onDecrementa: () {
-                      setState(() {
-                        (_temporada > 1) ? _temporada-- : _temporada;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 4.0),
-                  IncrementaDecrementa(
-                    titulo: 'Capítulo',
-                    valor: _capitulo.toDouble(),
-                    onIncrementa: () {
-                      setState(() {
-                        _capitulo++;
-                      });
-                    },
-                    onDecrementa: () {
-                      setState(() {
-                        (_capitulo > 0) ? _capitulo-- : _capitulo;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 4.0),
-                  ValorarSlider(
-                    max: 10.0,
-                    valor: _valoracion.toDouble(),
-                    onChanged: (value) {
-                      setState(() {
-                        _valoracion = value.toInt();
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 4.0),
-                  const Text(
-                    'Vista',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 4.0),
-                  Checkbox(
-                    value: _vista,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        _vista = value!;
-                        if (_vista) _aplazada = false;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 4.0),
-                  const Text(
-                    'Aplazada',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Checkbox(
-                    value: _aplazada,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        _aplazada = value!;
-                        if (_aplazada) _vista = false;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 16.0),
-                  Row(
-                    children: const [
-                      Tooltip(
-                          message:
-                              'Puedes asignar una imagen compartiendo esta y eligiendo esta App como destino.',
-                          showDuration: Duration(seconds: 5),
-                          child: Text(
-                            'Imagen',
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          )),
-                      SizedBox(width: 4.0),
-                      Tooltip(
-                        message:
-                            'Puedes asignar una imagen compartiendo esta y eligiendo esta App como destino.',
-                        showDuration: Duration(seconds: 5),
-                        child: Icon(Icons.help, size: 18.0),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 2.0),
-                  MaterialButton(
-                    onPressed: () async {
-                      if (defaultTargetPlatform == TargetPlatform.android) {
-                        _getImageSource(ImageSource.gallery);
-                      } else {
-                        _getImageSourceClipboard();
-                      }
-                    },
-                    child: SizedBox(
-                        width: 200.0,
-                        height: 200.0,
-                        child: AspectRatio(
-                            aspectRatio: 16 / 9,
-                            child: (_imagen != null)
-                                ? Image.memory(_imagen!)
-                                : Image.memory(base64Decode(_kImageBase64)))),
-                  ),
-                  const SizedBox(height: 16.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        body: SingleChildScrollView(
+            child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      SizedBox(
-                        height: 45.0,
-                        width: 150.0,
-                        child: ElevatedButton(
-                          onPressed: (_serieId != null)
-                              ? () => showConfigDialog(
-                                    context,
-                                    'Borrar Serie',
-                                    '¿Está seguro de borrar: ${_nombreController.text}?',
-                                    _deleteSerie,
-                                  )
-                              : null,
-                          style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all<Color>(Colors.red),
-                          ),
-                          child: const Text(
-                            'Eliminar',
-                            style: TextStyle(
-                              fontSize: 16.0,
-                            ),
-                          ),
+                      TextField(
+                        autofocus: (_serieId == null) ? true : false,
+                        controller: _nombreController,
+                        inputFormatters: [
+                          CapitalizeTextFormatter(),
+                        ],
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Introduzca el nombre de la serie',
+                        ),
+                        onChanged: (text) {
+                          setState(() {});
+                        },
+                      ),
+                      const SizedBox(height: 10.0),
+                      IncrementaDecrementa(
+                        titulo: 'Temporada',
+                        valor: _temporada.toDouble(),
+                        onIncrementa: () {
+                          setState(() {
+                            _temporada++;
+                          });
+                        },
+                        onDecrementa: () {
+                          setState(() {
+                            (_temporada > 1) ? _temporada-- : _temporada;
+                          });
+                        },
+                      ),
+                      //const SizedBox(height: 4.0),
+                      IncrementaDecrementa(
+                        titulo: 'Capítulo',
+                        valor: _capitulo.toDouble(),
+                        onIncrementa: () {
+                          setState(() {
+                            _capitulo++;
+                          });
+                        },
+                        onDecrementa: () {
+                          setState(() {
+                            (_capitulo > 0) ? _capitulo-- : _capitulo;
+                          });
+                        },
+                      ),
+                      //const SizedBox(height: 4.0),
+                      ValorarSlider(
+                        max: 10.0,
+                        valor: _valoracion.toDouble(),
+                        onChanged: (value) {
+                          setState(() {
+                            _valoracion = value.toInt();
+                          });
+                        },
+                      ),
+                      //const SizedBox(height: 4.0),
+                      const Text(
+                        'Vista',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                      SizedBox(
-                        height: 45.0,
-                        width: 150.0,
-                        child: ElevatedButton(
-                          onPressed: (_nombreController.text != '')
-                              ? () => _saveSerie()
-                              : null,
-                          style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all<Color>(Colors.green),
-                          ),
-                          child: const Text(
-                            'Grabar',
-                            style: TextStyle(
-                              fontSize: 16.0,
-                            ),
-                          ),
+                      //const SizedBox(height: 4.0),
+                      Checkbox(
+                        value: _vista,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            _vista = value!;
+                            if (_vista) _aplazada = false;
+                          });
+                        },
+                      ),
+                      //const SizedBox(height: 4.0),
+                      const Text(
+                        'Aplazada',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                    ],
-                  ),
-                ])));
+                      Checkbox(
+                        value: _aplazada,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            _aplazada = value!;
+                            if (_aplazada) _vista = false;
+                          });
+                        },
+                      ),
+                      //const SizedBox(height: 16.0),
+                      Row(
+                        children: const [
+                          Tooltip(
+                              message:
+                                  'Puedes asignar una imagen compartiendo esta y eligiendo esta App como destino.',
+                              showDuration: Duration(seconds: 5),
+                              child: Text(
+                                'Imagen',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              )),
+                          SizedBox(width: 4.0),
+                          Tooltip(
+                            message:
+                                'Puedes asignar una imagen compartiendola y eligiendo esta App como destino.',
+                            showDuration: Duration(seconds: 5),
+                            child: Icon(Icons.help, size: 18.0),
+                          ),
+                        ],
+                      ),
+                      // const SizedBox(height: 2.0),
+                      MaterialButton(
+                        onPressed: () async {
+                          if (defaultTargetPlatform == TargetPlatform.android) {
+                            _getImageSource(ImageSource.gallery);
+                          } else {
+                            _getImageSourceClipboard();
+                          }
+                        },
+                        child: SizedBox(
+                            width: 200.0,
+                            height: 200.0,
+                            child: AspectRatio(
+                                aspectRatio: 16 / 9,
+                                child: (_imagen != null)
+                                    ? Image.memory(_imagen!)
+                                    : Image.memory(
+                                        base64Decode(_kImageBase64)))),
+                      ),
+                      const SizedBox(height: 16.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            height: 45.0,
+                            width: 150.0,
+                            child: ElevatedButton(
+                              onPressed: (_serieId != null)
+                                  ? () => showConfigDialog(
+                                        context,
+                                        'Borrar Serie',
+                                        '¿Está seguro de borrar: ${_nombreController.text}?',
+                                        _deleteSerie,
+                                      )
+                                  : null,
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.red),
+                              ),
+                              child: const Text(
+                                'Eliminar',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 45.0,
+                            width: 150.0,
+                            child: ElevatedButton(
+                              onPressed: (_nombreController.text != '')
+                                  ? () => _saveSerie()
+                                  : null,
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.green),
+                              ),
+                              child: const Text(
+                                'Grabar',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ]))));
   }
 }
