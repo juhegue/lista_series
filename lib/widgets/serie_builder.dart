@@ -264,7 +264,7 @@ class SerieCard extends StatelessWidget {
                                     '\t\t\t${(serie.valoracion > 0) ? serie.valoracion : ""}',
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 24,
+                                    fontSize: 22,
                                     color: Colors.teal)),
                           ],
                         ),

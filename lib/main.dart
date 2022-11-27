@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.teal,
       ),
-      home: const MyHomePage(title: 'Series'),
+      home: const MyHomePage(title: 'Lista Series'),
     );
   }
 }

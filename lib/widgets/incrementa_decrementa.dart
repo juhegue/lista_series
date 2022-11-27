@@ -35,8 +35,8 @@ class IncrementaDecrementa extends StatelessWidget {
                 height: 40.0,
                 //width: 40.0,  -> no es necesario al tener Expanded
                 child: TextButton(
-                  child: const Icon(Icons.add),
-                  onPressed: () => onIncrementa(),
+                  child: const Icon(Icons.remove),
+                  onPressed: () => onDecrementa(),
                 ),
               )),
               Expanded(
@@ -44,8 +44,8 @@ class IncrementaDecrementa extends StatelessWidget {
                   height: 40.0,
                   //width: 40.0,
                   child: TextButton(
-                    child: const Icon(Icons.remove),
-                    onPressed: () => onDecrementa(),
+                    child: const Icon(Icons.add),
+                    onPressed: () => onIncrementa(),
                   ),
                 ),
               )

@@ -252,7 +252,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
                           ),
                         ],
                       ),
-                      // const SizedBox(height: 2.0),
+                      const SizedBox(height: 16.0),
                       MaterialButton(
                         onPressed: () async {
                           if (defaultTargetPlatform == TargetPlatform.android) {
@@ -262,8 +262,8 @@ class _SerieFormPageState extends State<SerieFormPage> {
                           }
                         },
                         child: SizedBox(
-                            width: 200.0,
-                            height: 200.0,
+                            //width: 200.0,
+                            height: 184.0,
                             child: AspectRatio(
                                 aspectRatio: 16 / 9,
                                 child: (_imagen != null)

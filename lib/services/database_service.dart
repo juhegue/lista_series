@@ -89,7 +89,7 @@ class DatabaseService {
         'CREATE TABLE serie(id INTEGER PRIMARY KEY AUTOINCREMENT, fecha_creacion INTEGER, fecha_modificacion INTEGER, nombre TEXT, temporada INTEGER, capitulo INTEGER, valoracion INTEGER, vista INTEGER, aplazada INTEGER, imagen BLOB)',
       );
       if (kDebugMode) {
-        print("DATABASE CREATE v3");
+        print("DATABASE CREATE v4");
       }
     },
   };
