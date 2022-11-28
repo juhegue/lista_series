@@ -7,6 +7,7 @@ import 'package:lista_series/models/serie.dart';
 import 'package:lista_series/widgets/outlined_text.dart';
 import 'package:lista_series/widgets/dialog.dart';
 import 'package:lista_series/services/database_service.dart';
+import 'package:lista_series/widgets/imagen.dart';
 
 const int seriesPerPage = 100;
 
@@ -225,6 +226,16 @@ class SerieCard extends StatelessWidget {
             ),
             const SizedBox(width: 20.0),
             Expanded(
+                child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        Imagen(titulo: serie.nombre, imagen: serie.imagen!),
+                    fullscreenDialog: true,
+                  ),
+                );
+              },
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -273,7 +284,7 @@ class SerieCard extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
+            )),
             const SizedBox(width: 20.0),
             GestureDetector(
               onTap: () => onEdit(serie),

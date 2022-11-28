@@ -13,6 +13,7 @@ import 'package:lista_series/constants.dart'
     show kImageBase64Galeria, kImageBase64Clipboar;
 import 'package:lista_series/widgets/dialog.dart';
 import 'package:lista_series/widgets/valorar_slider.dart';
+import 'package:lista_series/widgets/imagen.dart';
 
 var _kImageBase64 = (defaultTargetPlatform == TargetPlatform.android)
     ? kImageBase64Galeria
@@ -253,24 +254,40 @@ class _SerieFormPageState extends State<SerieFormPage> {
                         ],
                       ),
                       const SizedBox(height: 16.0),
-                      MaterialButton(
-                        onPressed: () async {
-                          if (defaultTargetPlatform == TargetPlatform.android) {
-                            _getImageSource(ImageSource.gallery);
-                          } else {
-                            _getImageSourceClipboard();
-                          }
-                        },
-                        child: SizedBox(
-                            //width: 200.0,
-                            height: 184.0,
-                            child: AspectRatio(
-                                aspectRatio: 16 / 9,
-                                child: (_imagen != null)
-                                    ? Image.memory(_imagen!)
-                                    : Image.memory(
-                                        base64Decode(_kImageBase64)))),
-                      ),
+                      GestureDetector(
+                          onPanUpdate: (details) {
+                            if ((details.delta.dx > 10 ||
+                                    details.delta.dx < 10) &&
+                                _imagen != null) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => Imagen(
+                                      titulo: _nombreController.text,
+                                      imagen: _imagen!),
+                                  fullscreenDialog: true,
+                                ),
+                              );
+                            }
+                          },
+                          child: MaterialButton(
+                            onPressed: () async {
+                              if (defaultTargetPlatform ==
+                                  TargetPlatform.android) {
+                                _getImageSource(ImageSource.gallery);
+                              } else {
+                                _getImageSourceClipboard();
+                              }
+                            },
+                            child: SizedBox(
+                                //width: 200.0,
+                                height: 184.0,
+                                child: AspectRatio(
+                                    aspectRatio: 16 / 9,
+                                    child: (_imagen != null)
+                                        ? Image.memory(_imagen!)
+                                        : Image.memory(
+                                            base64Decode(_kImageBase64)))),
+                          )),
                       const SizedBox(height: 16.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
