@@ -151,6 +151,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
                         inputFormatters: [
                           CapitalizeTextFormatter(),
                         ],
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           hintText: 'Introduzca el nombre de la serie',
@@ -159,7 +160,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
                           setState(() {});
                         },
                       ),
-                      const SizedBox(height: 24.0),
+                      const SizedBox(height: 16.0),
                       IncrementaDecrementa(
                         titulo: 'Temporada',
                         valor: _temporada.toDouble(),
@@ -189,7 +190,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
                           });
                         },
                       ),
-                      //const SizedBox(height: 4.0),
+                      //const SizedBox(height: 4.0),.............
                       ValorarSlider(
                         max: 10.0,
                         valor: _valoracion.toDouble(),
@@ -199,7 +200,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
                           });
                         },
                       ),
-                      const SizedBox(height: 16.0),
+                      const SizedBox(height: 4.0),
                       Check(
                           titulo: 'Vista',
                           valor: _vista,
@@ -209,7 +210,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
                               if (_vista) _aplazada = _descartada = false;
                             });
                           }),
-                      const SizedBox(height: 16.0),
+                      //const SizedBox(height: 4.0),
                       Check(
                           titulo: 'Aplazada',
                           valor: _aplazada,
@@ -219,7 +220,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
                               if (_aplazada) _vista = _descartada = false;
                             });
                           }),
-                      const SizedBox(height: 16.0),
+                      //const SizedBox(height: 4.0),
                       Check(
                           titulo: 'Descartada',
                           valor: _descartada,
@@ -229,7 +230,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
                               if (_descartada) _vista = _aplazada = false;
                             });
                           }),
-                      const SizedBox(height: 16.0),
+                      //const SizedBox(height: 4.0),
                       Row(
                         children: const [
                           Tooltip(
@@ -252,7 +253,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16.0),
+                      //const SizedBox(height: 4.0),
                       GestureDetector(
                           onPanUpdate: (details) {
                             if ((details.delta.dx > 10 ||

@@ -26,7 +26,7 @@ class Check extends StatelessWidget {
         value: valor,
         onChanged: onChanged,
       ),
-      const SizedBox(width: 8.0),
+      const SizedBox(width: 6.0),
     ]);
   }
 }
