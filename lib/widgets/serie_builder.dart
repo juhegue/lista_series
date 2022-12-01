@@ -251,13 +251,19 @@ class SerieCard extends StatelessWidget {
                               borderColor: Colors.blueGrey,
                               foreColor: Colors.black87,
                               fontSize: 18.0)
-                          : Text(
-                              serie.nombre,
-                              style: const TextStyle(
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
+                          : (serie.descartada!)
+                              ? OutlinedText(
+                                  text: serie.nombre,
+                                  borderColor: Colors.redAccent,
+                                  foreColor: Colors.black87,
+                                  fontSize: 18.0)
+                              : Text(
+                                  serie.nombre,
+                                  style: const TextStyle(
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
                   const SizedBox(height: 4.0),
                   Row(
                     children: [

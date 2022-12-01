@@ -14,6 +14,7 @@ import 'package:lista_series/constants.dart'
 import 'package:lista_series/widgets/dialog.dart';
 import 'package:lista_series/widgets/valorar_slider.dart';
 import 'package:lista_series/widgets/imagen.dart';
+import 'package:lista_series/widgets/check.dart';
 
 var _kImageBase64 = (defaultTargetPlatform == TargetPlatform.android)
     ? kImageBase64Galeria
@@ -51,6 +52,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
   Uint8List? _imagen;
   bool _vista = false;
   bool _aplazada = false;
+  bool _descartada = false;
   int? _serieId;
 
   void getSerieId() {
@@ -71,6 +73,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
       _imagen = widget.serie!.imagen;
       _vista = widget.serie!.vista!;
       _aplazada = widget.serie!.aplazada!;
+      _descartada = widget.serie!.descartada!;
     }
   }
 
@@ -90,6 +93,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
       valoracion: _valoracion,
       vista: _vista,
       aplazada: _aplazada,
+      descartada: _descartada,
       imagen: _imagen,
     );
     serie.saveSerie(_databaseService);
@@ -155,7 +159,7 @@ class _SerieFormPageState extends State<SerieFormPage> {
                           setState(() {});
                         },
                       ),
-                      const SizedBox(height: 10.0),
+                      const SizedBox(height: 24.0),
                       IncrementaDecrementa(
                         titulo: 'Temporada',
                         valor: _temporada.toDouble(),
@@ -195,42 +199,37 @@ class _SerieFormPageState extends State<SerieFormPage> {
                           });
                         },
                       ),
-                      //const SizedBox(height: 4.0),
-                      const Text(
-                        'Vista',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      //const SizedBox(height: 4.0),
-                      Checkbox(
-                        value: _vista,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            _vista = value!;
-                            if (_vista) _aplazada = false;
-                          });
-                        },
-                      ),
-                      //const SizedBox(height: 4.0),
-                      const Text(
-                        'Aplazada',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Checkbox(
-                        value: _aplazada,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            _aplazada = value!;
-                            if (_aplazada) _vista = false;
-                          });
-                        },
-                      ),
-                      //const SizedBox(height: 16.0),
+                      const SizedBox(height: 16.0),
+                      Check(
+                          titulo: 'Vista',
+                          valor: _vista,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              _vista = value!;
+                              if (_vista) _aplazada = _descartada = false;
+                            });
+                          }),
+                      const SizedBox(height: 16.0),
+                      Check(
+                          titulo: 'Aplazada',
+                          valor: _aplazada,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              _aplazada = value!;
+                              if (_aplazada) _vista = _descartada = false;
+                            });
+                          }),
+                      const SizedBox(height: 16.0),
+                      Check(
+                          titulo: 'Descartada',
+                          valor: _descartada,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              _descartada = value!;
+                              if (_descartada) _vista = _aplazada = false;
+                            });
+                          }),
+                      const SizedBox(height: 16.0),
                       Row(
                         children: const [
                           Tooltip(

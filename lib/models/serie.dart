@@ -14,6 +14,7 @@ class Serie {
   final int valoracion;
   final bool? vista;
   final bool? aplazada;
+  final bool? descartada;
   final Uint8List? imagen;
 
   const Serie({
@@ -26,6 +27,7 @@ class Serie {
     required this.valoracion,
     this.vista,
     this.aplazada,
+    this.descartada,
     this.imagen,
   });
 
@@ -55,13 +57,14 @@ class Serie {
       'valoracion': valoracion,
       'vista': (vista ?? false) ? 1 : 0,
       'aplazada': (aplazada ?? false) ? 1 : 0,
+      'descartada': (descartada ?? false) ? 1 : 0,
       'imagen': (imagen == null) ? null : base64.encode(imagen!),
     };
   }
 
   @override
   String toString() {
-    return 'Serie [$id] $fechaModificacion $nombre T:$temporada C:$capitulo $valoracion $vista $aplazada}';
+    return 'Serie [$id] $fechaModificacion $nombre T:$temporada C:$capitulo $valoracion $vista $aplazada $descartada}';
   }
 
   Future<void> saveSerie(DatabaseService dbs) async {
@@ -109,6 +112,7 @@ Serie _mapToSerie(var map) {
     valoracion: map['valoracion'],
     vista: (map['vista'] == 1) ? true : false,
     aplazada: (map['aplazada'] == 1) ? true : false,
+    descartada: (map['descartada'] == 1) ? true : false,
     imagen: (map['imagen'] == null) ? null : base64.decode(map['imagen']),
   );
 }
@@ -116,8 +120,9 @@ Serie _mapToSerie(var map) {
 Future countSeries(
     DatabaseService dbs, int limit, int offset, List filtro) async {
   final db = await dbs.database;
-  final int vista = (filtro[0] == null || !filtro[0]) ? 0 : 1;
-  final int aplazada = (filtro[1] == null || !filtro[1]) ? 0 : 1;
+  final int aplazada = (filtro[0] == false && filtro[1] == true) ? 1 : 0;
+  final int vista = (filtro[0] == true && filtro[1] == false) ? 1 : 0;
+  final int descartada = ((filtro[0] == true && filtro[1] == true)) ? 1 : 0;
   late final int? count;
   late final List<Map<String, dynamic>> maps;
 
@@ -126,13 +131,13 @@ Future countSeries(
         ? Sqflite.firstIntValue(
             await txn.rawQuery('SELECT COUNT(*) FROM serie'))
         : Sqflite.firstIntValue(await txn.rawQuery(
-            'SELECT COUNT(*) FROM serie WHERE vista=$vista AND aplazada=$aplazada'));
+            'SELECT COUNT(*) FROM serie WHERE vista=$vista AND aplazada=$aplazada AND descartada=$descartada'));
 
     maps = (filtro[0] == null && filtro[1] == null)
         ? await txn.rawQuery(
             'SELECT * FROM serie ORDER BY nombre COLLATE NOCASE ASC LIMIT $limit OFFSET $offset')
         : await txn.rawQuery(
-            'SELECT * FROM serie WHERE vista=$vista AND aplazada=$aplazada ORDER BY nombre COLLATE NOCASE ASC LIMIT $limit OFFSET $offset');
+            'SELECT * FROM serie WHERE vista=$vista AND aplazada=$aplazada AND descartada=$descartada ORDER BY nombre COLLATE NOCASE ASC LIMIT $limit OFFSET $offset');
   });
 
   List<Serie> list = List.generate(maps.length, (i) {
@@ -159,6 +164,7 @@ Future rellenoDemo(DatabaseService dbs, int registros) async {
       valoracion: serie.valoracion,
       vista: serie.vista,
       aplazada: serie.aplazada,
+      descartada: serie.descartada,
       imagen: serie.imagen,
     );
     s.saveSerie(dbs);

@@ -64,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     super.initState();
     _databaseService = DatabaseService();
 
-    _controller = TabController(length: 4, vsync: this);
+    _controller = TabController(length: 5, vsync: this);
     _controller.addListener(() {
       setState(() {
         _selectedIndex = _controller.index;
@@ -139,16 +139,17 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     var viendo = await countSeries(_databaseService, 1, 0, [false, false]);
     var aplazadas = await countSeries(_databaseService, 1, 0, [false, true]);
     var vistas = await countSeries(_databaseService, 1, 0, [true, false]);
+    var descartadas = await countSeries(_databaseService, 1, 0, [true, true]);
     var todas = await countSeries(_databaseService, 1, 0, [null, null]);
     String msg =
-        'Viendo: ${viendo[0]}\nAplazadas: ${aplazadas[0]}\nVistas: ${vistas[0]}\nTodas: ${todas[0]}';
+        'Viendo: ${viendo[0]}\nAplazadas: ${aplazadas[0]}\nVistas: ${vistas[0]}\nDescartadas: ${descartadas[0]}\nTodas: ${todas[0]}';
     msgAviso('Sumario', msg);
   }
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-        length: 4,
+        length: 5,
         child: Scaffold(
           drawer: Drawer(
             child: ListView(
@@ -295,6 +296,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   padding: EdgeInsets.symmetric(vertical: 16.0),
                   child: Text('Todas'),
                 ),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.0),
+                  child: Text('Descartadas'),
+                ),
               ],
             ),
           ),
@@ -360,6 +365,24 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 child: SerieBuilder(
                     databaseService: _databaseService,
                     filtro: const [null, null],
+                    onEdit: (value) {
+                      {
+                        Navigator.of(context)
+                            .push(
+                              MaterialPageRoute(
+                                builder: (_) => SerieFormPage(serie: value),
+                                fullscreenDialog: true,
+                              ),
+                            )
+                            .then((_) => setState(() {}));
+                      }
+                    }),
+              ),
+              // Descartadas
+              Tab(
+                child: SerieBuilder(
+                    databaseService: _databaseService,
+                    filtro: const [true, true],
                     onEdit: (value) {
                       {
                         Navigator.of(context)
