@@ -116,27 +116,31 @@ class DatabaseService {
       // Convierte la imagen Uint8List a Base64
       List<Map<String, dynamic>> maps = [];
       maps = await db.query('serie');
-      List.generate(maps.length, (i) {
-        Serie s = Serie(
-            id: maps[i]['id'],
-            fechaCreacion:
-                DateTime.fromMillisecondsSinceEpoch(maps[i]['fecha_creacion']),
-            nombre: maps[i]['nombre'],
-            temporada: maps[i]['temporada'],
-            capitulo: maps[i]['capitulo'],            
-            valoracion: 0,  //  Añadido para evitar el error: missing_required_argument
-            vista: (maps[i]['vista'] == 1) ? true : false,
-            aplazada: (maps[i]['aplazada'] == 1) ? true : false,
-            descartada: (maps[i]['descartada'] == 1) ? true : false,
-            imagen: maps[i]['imagen']);
+      List.generate(
+        maps.length,
+        (i) {
+          Serie s = Serie(
+              id: maps[i]['id'],
+              fechaCreacion: DateTime.fromMillisecondsSinceEpoch(
+                  maps[i]['fecha_creacion']),
+              nombre: maps[i]['nombre'],
+              temporada: maps[i]['temporada'],
+              capitulo: maps[i]['capitulo'],
+              valoracion:
+                  0, //  Añadido para evitar el error: missing_required_argument
+              vista: (maps[i]['vista'] == 1) ? true : false,
+              aplazada: (maps[i]['aplazada'] == 1) ? true : false,
+              descartada: (maps[i]['descartada'] == 1) ? true : false,
+              imagen: maps[i]['imagen']);
 
-        db.update(
-          'serie',
-          s.toMap(),
-          where: 'id = ?',
-          whereArgs: [s.id],
-        );
-      });
+          db.update(
+            'serie',
+            s.toMap(),
+            where: 'id = ?',
+            whereArgs: [s.id],
+          );
+        },
+      );
     },
     'from_version_2_to_version_3': (Database db) async {
       if (kDebugMode) {
@@ -147,10 +151,13 @@ class DatabaseService {
 
       List<Map<String, dynamic>> maps = [];
       maps = await db.query('serie');
-      List.generate(maps.length, (i) {
-        db.rawQuery(
-            "UPDATE serie SET fecha_modificacion=${maps[i]['fecha_creacion']} WHERE id=${maps[i]['id']}");
-      });
+      List.generate(
+        maps.length,
+        (i) {
+          db.rawQuery(
+              "UPDATE serie SET fecha_modificacion=${maps[i]['fecha_creacion']} WHERE id=${maps[i]['id']}");
+        },
+      );
     },
     'from_version_3_to_version_4': (Database db) async {
       if (kDebugMode) {

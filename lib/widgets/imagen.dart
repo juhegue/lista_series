@@ -10,15 +10,18 @@ class Imagen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(titulo),
-          centerTitle: true,
+      appBar: AppBar(
+        title: Text(titulo),
+        centerTitle: true,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: Image.memory(imagen).image,
+            fit: BoxFit.cover,
+          ),
         ),
-        body: Container(
-            decoration: BoxDecoration(
-                image: DecorationImage(
-          image: Image.memory(imagen).image,
-          fit: BoxFit.cover,
-        ))));
+      ),
+    );
   }
 }

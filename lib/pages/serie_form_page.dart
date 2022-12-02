@@ -109,9 +109,11 @@ class _SerieFormPageState extends State<SerieFormPage> {
 
   void _getDataFile(file) async {
     var data = await file.readAsBytes();
-    setState(() {
-      _imagen = data;
-    });
+    setState(
+      () {
+        _imagen = data;
+      },
+    );
   }
 
   Future _getImageSource(ImageSource media) async {
@@ -132,213 +134,226 @@ class _SerieFormPageState extends State<SerieFormPage> {
     getSerieId();
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text((widget.serie == null)
-              ? 'Añadir nueva serie'
-              : 'Modificar serie'),
-          backgroundColor: Colors.teal,
-          centerTitle: true,
+      appBar: AppBar(
+        title: Text(
+            (widget.serie == null) ? 'Añadir nueva serie' : 'Modificar serie'),
+        backgroundColor: Colors.teal,
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            TextField(
+              autofocus: (_serieId == null) ? true : false,
+              controller: _nombreController,
+              inputFormatters: [
+                CapitalizeTextFormatter(),
+              ],
+              style: const TextStyle(fontWeight: FontWeight.bold),
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Introduzca el nombre de la serie',
+              ),
+              onChanged: (text) {
+                setState(() {});
+              },
+            ),
+            const SizedBox(height: 16.0),
+            IncrementaDecrementa(
+              titulo: 'Temporada',
+              valor: _temporada.toDouble(),
+              onIncrementa: () {
+                setState(
+                  () {
+                    _temporada++;
+                  },
+                );
+              },
+              onDecrementa: () {
+                setState(
+                  () {
+                    (_temporada > 1) ? _temporada-- : _temporada;
+                  },
+                );
+              },
+            ),
+            //const SizedBox(height: 4.0),
+            IncrementaDecrementa(
+              titulo: 'Capítulo',
+              valor: _capitulo.toDouble(),
+              onIncrementa: () {
+                setState(() {
+                  _capitulo++;
+                });
+              },
+              onDecrementa: () {
+                setState(
+                  () {
+                    (_capitulo > 0) ? _capitulo-- : _capitulo;
+                  },
+                );
+              },
+            ),
+            //const SizedBox(height: 4.0),.............
+            ValorarSlider(
+              max: 10.0,
+              valor: _valoracion.toDouble(),
+              onChanged: (value) {
+                setState(
+                  () {
+                    _valoracion = value.toInt();
+                  },
+                );
+              },
+            ),
+            const SizedBox(height: 4.0),
+            Check(
+              titulo: 'Vista',
+              valor: _vista,
+              onChanged: (bool? value) {
+                setState(
+                  () {
+                    _vista = value!;
+                    if (_vista) _aplazada = _descartada = false;
+                  },
+                );
+              },
+            ),
+            //const SizedBox(height: 4.0),
+            Check(
+              titulo: 'Aplazada',
+              valor: _aplazada,
+              onChanged: (bool? value) {
+                setState(
+                  () {
+                    _aplazada = value!;
+                    if (_aplazada) _vista = _descartada = false;
+                  },
+                );
+              },
+            ),
+            //const SizedBox(height: 4.0),
+            Check(
+              titulo: 'Descartada',
+              valor: _descartada,
+              onChanged: (bool? value) {
+                setState(
+                  () {
+                    _descartada = value!;
+                    if (_descartada) _vista = _aplazada = false;
+                  },
+                );
+              },
+            ),
+            //const SizedBox(height: 4.0),
+            Row(
+              children: const [
+                Tooltip(
+                    message:
+                        'Puedes asignar una imagen compartiendo esta y eligiendo esta App como destino.',
+                    showDuration: Duration(seconds: 5),
+                    child: Text(
+                      'Imagen',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    )),
+                SizedBox(width: 4.0),
+                Tooltip(
+                  message:
+                      'Puedes asignar una imagen compartiendola y eligiendo esta App como destino.',
+                  showDuration: Duration(seconds: 5),
+                  child: Icon(Icons.help, size: 18.0),
+                ),
+              ],
+            ),
+            //const SizedBox(height: 4.0),
+            GestureDetector(
+              onPanUpdate: (details) {
+                if ((details.delta.dx > 10 || details.delta.dx < 10) &&
+                    _imagen != null) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => Imagen(
+                          titulo: _nombreController.text, imagen: _imagen!),
+                      fullscreenDialog: true,
+                    ),
+                  );
+                }
+              },
+              child: MaterialButton(
+                onPressed: () async {
+                  if (defaultTargetPlatform == TargetPlatform.android) {
+                    _getImageSource(ImageSource.gallery);
+                  } else {
+                    _getImageSourceClipboard();
+                  }
+                },
+                child: SizedBox(
+                    //width: 200.0,
+                    height: 184.0,
+                    child: AspectRatio(
+                        aspectRatio: 16 / 9,
+                        child: (_imagen != null)
+                            ? Image.memory(_imagen!)
+                            : Image.memory(base64Decode(_kImageBase64)))),
+              ),
+            ),
+            const SizedBox(height: 16.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(
+                  height: 45.0,
+                  width: 150.0,
+                  child: ElevatedButton(
+                    onPressed: (_serieId != null)
+                        ? () => showConfigDialog(
+                              context,
+                              'Borrar Serie',
+                              '¿Está seguro de borrar: ${_nombreController.text}?',
+                              _deleteSerie,
+                            )
+                        : null,
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.red),
+                    ),
+                    child: const Text(
+                      'Eliminar',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 45.0,
+                  width: 150.0,
+                  child: ElevatedButton(
+                    onPressed: (_nombreController.text != '')
+                        ? () => _saveSerie()
+                        : null,
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.green),
+                    ),
+                    child: const Text(
+                      'Grabar',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ]),
         ),
-        body: SingleChildScrollView(
-            child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      TextField(
-                        autofocus: (_serieId == null) ? true : false,
-                        controller: _nombreController,
-                        inputFormatters: [
-                          CapitalizeTextFormatter(),
-                        ],
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: 'Introduzca el nombre de la serie',
-                        ),
-                        onChanged: (text) {
-                          setState(() {});
-                        },
-                      ),
-                      const SizedBox(height: 16.0),
-                      IncrementaDecrementa(
-                        titulo: 'Temporada',
-                        valor: _temporada.toDouble(),
-                        onIncrementa: () {
-                          setState(() {
-                            _temporada++;
-                          });
-                        },
-                        onDecrementa: () {
-                          setState(() {
-                            (_temporada > 1) ? _temporada-- : _temporada;
-                          });
-                        },
-                      ),
-                      //const SizedBox(height: 4.0),
-                      IncrementaDecrementa(
-                        titulo: 'Capítulo',
-                        valor: _capitulo.toDouble(),
-                        onIncrementa: () {
-                          setState(() {
-                            _capitulo++;
-                          });
-                        },
-                        onDecrementa: () {
-                          setState(() {
-                            (_capitulo > 0) ? _capitulo-- : _capitulo;
-                          });
-                        },
-                      ),
-                      //const SizedBox(height: 4.0),.............
-                      ValorarSlider(
-                        max: 10.0,
-                        valor: _valoracion.toDouble(),
-                        onChanged: (value) {
-                          setState(() {
-                            _valoracion = value.toInt();
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 4.0),
-                      Check(
-                          titulo: 'Vista',
-                          valor: _vista,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              _vista = value!;
-                              if (_vista) _aplazada = _descartada = false;
-                            });
-                          }),
-                      //const SizedBox(height: 4.0),
-                      Check(
-                          titulo: 'Aplazada',
-                          valor: _aplazada,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              _aplazada = value!;
-                              if (_aplazada) _vista = _descartada = false;
-                            });
-                          }),
-                      //const SizedBox(height: 4.0),
-                      Check(
-                          titulo: 'Descartada',
-                          valor: _descartada,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              _descartada = value!;
-                              if (_descartada) _vista = _aplazada = false;
-                            });
-                          }),
-                      //const SizedBox(height: 4.0),
-                      Row(
-                        children: const [
-                          Tooltip(
-                              message:
-                                  'Puedes asignar una imagen compartiendo esta y eligiendo esta App como destino.',
-                              showDuration: Duration(seconds: 5),
-                              child: Text(
-                                'Imagen',
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              )),
-                          SizedBox(width: 4.0),
-                          Tooltip(
-                            message:
-                                'Puedes asignar una imagen compartiendola y eligiendo esta App como destino.',
-                            showDuration: Duration(seconds: 5),
-                            child: Icon(Icons.help, size: 18.0),
-                          ),
-                        ],
-                      ),
-                      //const SizedBox(height: 4.0),
-                      GestureDetector(
-                          onPanUpdate: (details) {
-                            if ((details.delta.dx > 10 ||
-                                    details.delta.dx < 10) &&
-                                _imagen != null) {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => Imagen(
-                                      titulo: _nombreController.text,
-                                      imagen: _imagen!),
-                                  fullscreenDialog: true,
-                                ),
-                              );
-                            }
-                          },
-                          child: MaterialButton(
-                            onPressed: () async {
-                              if (defaultTargetPlatform ==
-                                  TargetPlatform.android) {
-                                _getImageSource(ImageSource.gallery);
-                              } else {
-                                _getImageSourceClipboard();
-                              }
-                            },
-                            child: SizedBox(
-                                //width: 200.0,
-                                height: 184.0,
-                                child: AspectRatio(
-                                    aspectRatio: 16 / 9,
-                                    child: (_imagen != null)
-                                        ? Image.memory(_imagen!)
-                                        : Image.memory(
-                                            base64Decode(_kImageBase64)))),
-                          )),
-                      const SizedBox(height: 16.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SizedBox(
-                            height: 45.0,
-                            width: 150.0,
-                            child: ElevatedButton(
-                              onPressed: (_serieId != null)
-                                  ? () => showConfigDialog(
-                                        context,
-                                        'Borrar Serie',
-                                        '¿Está seguro de borrar: ${_nombreController.text}?',
-                                        _deleteSerie,
-                                      )
-                                  : null,
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.red),
-                              ),
-                              child: const Text(
-                                'Eliminar',
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 45.0,
-                            width: 150.0,
-                            child: ElevatedButton(
-                              onPressed: (_nombreController.text != '')
-                                  ? () => _saveSerie()
-                                  : null,
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.green),
-                              ),
-                              child: const Text(
-                                'Grabar',
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ]))));
+      ),
+    );
   }
 }

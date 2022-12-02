@@ -13,20 +13,24 @@ class Check extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Expanded(
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
           child: Text(
-        titulo,
-        style: const TextStyle(
-          fontSize: 16.0,
-          fontWeight: FontWeight.w500,
+            titulo,
+            style: const TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ),
-      )),
-      Checkbox(
-        value: valor,
-        onChanged: onChanged,
-      ),
-      const SizedBox(width: 6.0),
-    ]);
+        Checkbox(
+          value: valor,
+          onChanged: onChanged,
+        ),
+        const SizedBox(width: 6.0),
+      ],
+    );
   }
 }

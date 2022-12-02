@@ -38,7 +38,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             fullscreenDialog: true,
           ),
         )
-        .then((_) => setState(() {}));
+        .then(
+          (_) => setState(() {}),
+        );
   }
 
   void leeFichero(shared) async {
@@ -65,35 +67,44 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     _databaseService = DatabaseService();
 
     _controller = TabController(length: 5, vsync: this);
-    _controller.addListener(() {
-      setState(() {
-        _selectedIndex = _controller.index;
-        if (kDebugMode) {
-          print('Tab $_selectedIndex');
-        }
-        // No es necesario, esto sería para forzar a posicionarce en un tab
-        //DefaultTabController.of(context)?.animateTo(_selectedIndex);
-      });
-    });
+    _controller.addListener(
+      () {
+        setState(
+          () {
+            _selectedIndex = _controller.index;
+            if (kDebugMode) {
+              print('Tab $_selectedIndex');
+            }
+            // No es necesario, esto sería para forzar a posicionarce en un tab
+            //DefaultTabController.of(context)?.animateTo(_selectedIndex);
+          },
+        );
+      },
+    );
 
     if (Platform.isAndroid || Platform.isIOS) {
       // For sharing images coming from outside the app while the app is in the memory
       _intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream()
           .listen((List<SharedMediaFile> value) {
-        setState(() {
-          _sharedFiles = value;
-          leeFichero(value);
-        });
+        setState(
+          () {
+            _sharedFiles = value;
+            leeFichero(value);
+          },
+        );
       }, onError: (err) {});
 
       // For sharing images coming from outside the app while the app is closed
-      ReceiveSharingIntent.getInitialMedia()
-          .then((List<SharedMediaFile> value) {
-        setState(() {
-          _sharedFiles = value;
-          leeFichero(value);
-        });
-      });
+      ReceiveSharingIntent.getInitialMedia().then(
+        (List<SharedMediaFile> value) {
+          setState(
+            () {
+              _sharedFiles = value;
+              leeFichero(value);
+            },
+          );
+        },
+      );
     }
 
     initialization();
@@ -149,29 +160,29 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-        length: 5,
-        child: Scaffold(
-          drawer: Drawer(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                UserAccountsDrawerHeader(
-                  decoration: const BoxDecoration(color: Colors.teal),
-                  accountName: const Text(
-                    '©Juhegue',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
+      length: 5,
+      child: Scaffold(
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              UserAccountsDrawerHeader(
+                decoration: const BoxDecoration(color: Colors.teal),
+                accountName: const Text(
+                  '©Juhegue',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
                   ),
-                  accountEmail: const Text(
-                    'https://github.com/juhegue/lista_series',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  currentAccountPicture: Image.asset('assets/images/serie.png'),
                 ),
-                /*                
+                accountEmail: const Text(
+                  'https://github.com/juhegue/lista_series',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                currentAccountPicture: Image.asset('assets/images/serie.png'),
+              ),
+              /*                
                 const DrawerHeader(
                   decoration: BoxDecoration(
                     image: DecorationImage(
@@ -183,33 +194,33 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   ),
                   child: Text('Juhegue'),
                 ),*/
-                ListTile(
-                  leading: const Icon(
-                    Icons.backup,
-                  ),
-                  title: const Text('Realizar backup'),
-                  onTap: () {
-                    accionDb(
-                        true,
-                        backupDb,
-                        msgResultado,
-                        'Backup',
-                        'Completada con éxito en la carpeta Descargas.',
-                        'ERROR.Sin permisos.');
-                    Navigator.pop(context);
-                  },
+              ListTile(
+                leading: const Icon(
+                  Icons.backup,
                 ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.restore,
-                  ),
-                  title: const Text('Restaurar backup'),
-                  onTap: () {
-                    accionDb(true, restoreDb, msgResultado, 'Restaurar Backup',
-                        'Completada con éxito.', 'Acción no realizada.');
-                    Navigator.pop(context);
-                  },
+                title: const Text('Realizar backup'),
+                onTap: () {
+                  accionDb(
+                      true,
+                      backupDb,
+                      msgResultado,
+                      'Backup',
+                      'Completada con éxito en la carpeta Descargas.',
+                      'ERROR.Sin permisos.');
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.restore,
                 ),
+                title: const Text('Restaurar backup'),
+                onTap: () {
+                  accionDb(true, restoreDb, msgResultado, 'Restaurar Backup',
+                      'Completada con éxito.', 'Acción no realizada.');
+                  Navigator.pop(context);
+                },
+              ),
 /*                
                 ListTile(
                   leading: const Icon(
@@ -244,73 +255,91 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   },
                 ),
 */
-                ListTile(
-                  leading: const Icon(
-                    Icons.add_circle_outline,
-                  ),
-                  title: const Text('Sumario'),
-                  onTap: () {
-                    sumario();
-                  },
+              ListTile(
+                leading: const Icon(
+                  Icons.add_circle_outline,
                 ),
-                const AboutListTile(
-                  icon: Icon(
-                    Icons.info,
-                  ),
-                  applicationIcon: Icon(
-                    Icons.local_play,
-                  ),
-                  applicationName: 'Lista Serie',
-                  applicationVersion: '0.0.1',
-                  applicationLegalese: '© 2022 Juhegue',
-                  aboutBoxChildren: [
-                    Text(
-                        'Para los amantes de Kodi que se les olvida la serie vista ;) .'),
-                  ],
-                  child: Text('Acerca de...'),
+                title: const Text('Sumario'),
+                onTap: () {
+                  sumario();
+                },
+              ),
+              const AboutListTile(
+                icon: Icon(
+                  Icons.info,
                 ),
-              ],
-            ),
+                applicationIcon: Icon(
+                  Icons.local_play,
+                ),
+                applicationName: 'Lista Serie',
+                applicationVersion: '0.0.1',
+                applicationLegalese: '© 2022 Juhegue',
+                aboutBoxChildren: [
+                  Text(
+                      'Para los amantes de Kodi que se les olvida la serie vista ;) .'),
+                ],
+                child: Text('Acerca de...'),
+              ),
+            ],
           ),
-          appBar: AppBar(
-            title: Text(widget.title),
-            centerTitle: true,
-            bottom: TabBar(
-              controller: _controller,
-              isScrollable: true,
-              unselectedLabelColor: Colors.tealAccent,
-              tabs: const [
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  child: Text('Viendo'),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  child: Text('Aplazadas'),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  child: Text('Vistas'),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  child: Text('Todas'),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  child: Text('Descartadas'),
-                ),
-              ],
-            ),
-          ),
-          body: TabBarView(
+        ),
+        appBar: AppBar(
+          title: Text(widget.title),
+          centerTitle: true,
+          bottom: TabBar(
             controller: _controller,
-            children: [
-              // Viendo
-              Tab(
-                  child: SerieBuilder(
+            isScrollable: true,
+            unselectedLabelColor: Colors.tealAccent,
+            tabs: const [
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0),
+                child: Text('Viendo'),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0),
+                child: Text('Aplazadas'),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0),
+                child: Text('Vistas'),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0),
+                child: Text('Todas'),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0),
+                child: Text('Descartadas'),
+              ),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          controller: _controller,
+          children: [
+            // Viendo
+            Tab(
+                child: SerieBuilder(
+              databaseService: _databaseService,
+              filtro: const [false, false],
+              onEdit: (value) {
+                {
+                  Navigator.of(context)
+                      .push(
+                        MaterialPageRoute(
+                          builder: (_) => SerieFormPage(serie: value),
+                          fullscreenDialog: true,
+                        ),
+                      )
+                      .then((_) => setState(() {}));
+                }
+              },
+            )),
+            // Aplazadas
+            Tab(
+              child: SerieBuilder(
                 databaseService: _databaseService,
-                filtro: const [false, false],
+                filtro: const [false, true],
                 onEdit: (value) {
                   {
                     Navigator.of(context)
@@ -323,97 +352,83 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                         .then((_) => setState(() {}));
                   }
                 },
-              )),
-              // Aplazadas
-              Tab(
-                child: SerieBuilder(
-                    databaseService: _databaseService,
-                    filtro: const [false, true],
-                    onEdit: (value) {
-                      {
-                        Navigator.of(context)
-                            .push(
-                              MaterialPageRoute(
-                                builder: (_) => SerieFormPage(serie: value),
-                                fullscreenDialog: true,
-                              ),
-                            )
-                            .then((_) => setState(() {}));
-                      }
-                    }),
               ),
-              // Vistas
-              Tab(
-                child: SerieBuilder(
-                    databaseService: _databaseService,
-                    filtro: const [true, false],
-                    onEdit: (value) {
-                      {
-                        Navigator.of(context)
-                            .push(
-                              MaterialPageRoute(
-                                builder: (_) => SerieFormPage(serie: value),
-                                fullscreenDialog: true,
-                              ),
-                            )
-                            .then((_) => setState(() {}));
-                      }
-                    }),
+            ),
+            // Vistas
+            Tab(
+              child: SerieBuilder(
+                databaseService: _databaseService,
+                filtro: const [true, false],
+                onEdit: (value) {
+                  {
+                    Navigator.of(context)
+                        .push(
+                          MaterialPageRoute(
+                            builder: (_) => SerieFormPage(serie: value),
+                            fullscreenDialog: true,
+                          ),
+                        )
+                        .then((_) => setState(() {}));
+                  }
+                },
               ),
-              // Todas
-              Tab(
-                child: SerieBuilder(
-                    databaseService: _databaseService,
-                    filtro: const [null, null],
-                    onEdit: (value) {
-                      {
-                        Navigator.of(context)
-                            .push(
-                              MaterialPageRoute(
-                                builder: (_) => SerieFormPage(serie: value),
-                                fullscreenDialog: true,
-                              ),
-                            )
-                            .then((_) => setState(() {}));
-                      }
-                    }),
+            ),
+            // Todas
+            Tab(
+              child: SerieBuilder(
+                databaseService: _databaseService,
+                filtro: const [null, null],
+                onEdit: (value) {
+                  {
+                    Navigator.of(context)
+                        .push(
+                          MaterialPageRoute(
+                            builder: (_) => SerieFormPage(serie: value),
+                            fullscreenDialog: true,
+                          ),
+                        )
+                        .then((_) => setState(() {}));
+                  }
+                },
               ),
-              // Descartadas
-              Tab(
-                child: SerieBuilder(
-                    databaseService: _databaseService,
-                    filtro: const [true, true],
-                    onEdit: (value) {
-                      {
-                        Navigator.of(context)
-                            .push(
-                              MaterialPageRoute(
-                                builder: (_) => SerieFormPage(serie: value),
-                                fullscreenDialog: true,
-                              ),
-                            )
-                            .then((_) => setState(() {}));
-                      }
-                    }),
-              )
-            ],
-          ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              Navigator.of(context)
-                  .push(
-                    MaterialPageRoute(
-                      builder: (_) => const SerieFormPage(),
-                      fullscreenDialog: true,
-                    ),
-                  )
-                  .then((_) => setState(() {}));
-            },
-            tooltip: 'Añadir Serie',
-            child: const Icon(Icons.add),
-          ),
-        ));
+            ),
+            // Descartadas
+            Tab(
+              child: SerieBuilder(
+                databaseService: _databaseService,
+                filtro: const [true, true],
+                onEdit: (value) {
+                  {
+                    Navigator.of(context)
+                        .push(
+                          MaterialPageRoute(
+                            builder: (_) => SerieFormPage(serie: value),
+                            fullscreenDialog: true,
+                          ),
+                        )
+                        .then((_) => setState(() {}));
+                  }
+                },
+              ),
+            )
+          ],
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context)
+                .push(
+                  MaterialPageRoute(
+                    builder: (_) => const SerieFormPage(),
+                    fullscreenDialog: true,
+                  ),
+                )
+                .then((_) => setState(() {}));
+          },
+          tooltip: 'Añadir Serie',
+          child: const Icon(Icons.add),
+        ),
+      ),
+    );
   }
 }
