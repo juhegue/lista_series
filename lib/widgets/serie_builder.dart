@@ -31,23 +31,31 @@ class SerieBuilder extends StatelessWidget {
     //rellenoDemo(databaseService, 1000);
 
     return ChangeNotifierProvider<Catalog>(
-      create: (context) => Catalog(
-          databaseService: databaseService, filtro: filtro, orden: orden),
-      child: _SerieBuilder(onEdit: onEdit),
+      create: (context) =>
+          Catalog(databaseService: databaseService, filtro: filtro),
+      child: _SerieBuilder(onEdit: onEdit, orden: orden),
     );
   }
 }
 
 class _SerieBuilder extends StatelessWidget {
   final Function(Serie) onEdit;
+  final List orden;
   const _SerieBuilder({
     Key? key,
     required this.onEdit,
+    required this.orden,
   }) : super(key: key);
+
+  static List? ordenAnterior;
 
   @override
   Widget build(BuildContext context) {
-    var cachePages = false; // para refrescar cuando se edita
+    bool cacheIndex = false; // para refrescar el indice actual al editar
+    bool cacheInit = false; // para iniciar la cache al cambiar el orden
+
+    if (ordenAnterior != null && ordenAnterior != orden) cacheInit = true;
+    ordenAnterior = orden;
 
     return Selector<Catalog, int?>(
       selector: (context, catalog) => catalog.itemCount,
@@ -56,8 +64,8 @@ class _SerieBuilder extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 18),
         itemBuilder: (context, index) {
           var catalog = Provider.of<Catalog>(context);
-          var serie = catalog.getByIndex(index, cachePages);
-          cachePages = true;
+          var serie = catalog.getByIndex(index, orden, cacheIndex, cacheInit);
+          cacheIndex = true;
 
           if (serie.isLoading) {
             return const LoadingSerieCard();
@@ -73,13 +81,10 @@ class _SerieBuilder extends StatelessWidget {
 class Catalog extends ChangeNotifier {
   final DatabaseService databaseService;
   final List filtro;
-  final List orden;
   Catalog({
     required this.databaseService,
     required this.filtro,
-    required this.orden,
   });
-
   static const maxCacheDistance = seriesPerPage * 3;
 
   final Map<int, SeriePage> _pages = {};
@@ -96,10 +101,15 @@ class Catalog extends ChangeNotifier {
     super.dispose();
   }
 
-  Serie getByIndex(int index, bool cachePages) {
+  Serie getByIndex(int index, List orden, bool cacheIndex, bool cacheInit) {
     int startingIndex = (index ~/ seriesPerPage) * seriesPerPage;
 
-    if (_pages.containsKey(startingIndex) && cachePages) {
+    if (cacheInit) {
+      _pruneCache(startingIndex);
+      startingIndex = 0;
+    }
+
+    if (_pages.containsKey(startingIndex) && cacheIndex) {
       Serie serie = _pages[startingIndex]!.series[index - startingIndex];
       return serie;
     }
@@ -147,8 +157,7 @@ class SeriePage {
   final List<Serie> series;
   final int startingIndex;
   final bool hasNext;
-
-  SeriePage({
+  const SeriePage({
     required this.series,
     required this.startingIndex,
     required this.hasNext,
@@ -186,7 +195,11 @@ Future<SeriePage> fetchPage(DatabaseService databaseService, int startingIndex,
 class SerieCard extends StatelessWidget {
   final Serie serie;
   final Function onEdit;
-  const SerieCard({required this.serie, required this.onEdit, super.key});
+  const SerieCard({
+    required this.serie,
+    required this.onEdit,
+    super.key,
+  });
 
   Future<void> _launchInBrowser(Uri url) async {
     if (!await launchUrl(

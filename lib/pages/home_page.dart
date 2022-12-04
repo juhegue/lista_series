@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'dart:io';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
@@ -12,7 +14,6 @@ import 'package:lista_series/widgets/serie_builder.dart';
 import 'package:lista_series/util/backu_restore.dart';
 import 'package:lista_series/widgets/dialog.dart';
 
-// ignore: constant_identifier_names
 const ORDEN = {
   1: ['nombre', 'ASC'],
   2: ['fecha_creacion', 'ASC'],
@@ -22,6 +23,14 @@ const ORDEN = {
   -2: ['fecha_creacion', 'DESC'],
   -3: ['fecha_modificacion', 'DESC'],
   -4: ['valoracion', 'DESC'],
+};
+
+const FILTRO = {
+  'viendo': [false, false],
+  'aplazadas': [false, true],
+  'vistas': [true, false],
+  'descartadas': [true, true],
+  'todas': [null, null]
 };
 
 class MyHomePage extends StatefulWidget {
@@ -160,18 +169,17 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 
   Future<void> sumario() async {
-    var viendo = await countSeries(_databaseService, 1, 0, [false, false]);
-    var aplazadas = await countSeries(_databaseService, 1, 0, [false, true]);
-    var vistas = await countSeries(_databaseService, 1, 0, [true, false]);
-    var descartadas = await countSeries(_databaseService, 1, 0, [true, true]);
-    var todas = await countSeries(_databaseService, 1, 0, [null, null]);
+    var viendo = await countSeries(_databaseService, 1, 0, FILTRO['viendo']!);
+    var aplazadas =
+        await countSeries(_databaseService, 1, 0, FILTRO['aplazadas']!);
+    var vistas = await countSeries(_databaseService, 1, 0, FILTRO['vistas']!);
+    var descartadas =
+        await countSeries(_databaseService, 1, 0, FILTRO['descartadas']!);
+    var todas = await countSeries(_databaseService, 1, 0, FILTRO['todas']!);
+
     String msg =
         'Viendo: ${viendo[0]}\nAplazadas: ${aplazadas[0]}\nVistas: ${vistas[0]}\nDescartadas: ${descartadas[0]}\nTodas: ${todas[0]}';
     msgAviso('Sumario', msg);
-  }
-
-  void selectPopupMenu(context, value) {
-    _selectedPopupMenu = value;
   }
 
   @override
@@ -306,6 +314,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           actions: [
             PopupMenuButton(
               tooltip: 'Ordenación',
+              color: Colors.teal.shade300,
+              splashRadius: 40,
               itemBuilder: (context) {
                 return [
                   popupMenuItem(1, _selectedPopupMenu, 'Nombre'),
@@ -359,7 +369,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               child: SerieBuilder(
                 databaseService: _databaseService,
                 orden: ORDEN[_selectedPopupMenu]!,
-                filtro: const [false, false],
+                filtro: FILTRO['viendo']!,
                 onEdit: (value) {
                   {
                     Navigator.of(context)
@@ -379,7 +389,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               child: SerieBuilder(
                 databaseService: _databaseService,
                 orden: ORDEN[_selectedPopupMenu]!,
-                filtro: const [false, true],
+                filtro: FILTRO['aplazadas']!,
                 onEdit: (value) {
                   {
                     Navigator.of(context)
@@ -399,7 +409,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               child: SerieBuilder(
                 databaseService: _databaseService,
                 orden: ORDEN[_selectedPopupMenu]!,
-                filtro: const [true, false],
+                filtro: FILTRO['vistas']!,
                 onEdit: (value) {
                   {
                     Navigator.of(context)
@@ -419,7 +429,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               child: SerieBuilder(
                 databaseService: _databaseService,
                 orden: ORDEN[_selectedPopupMenu]!,
-                filtro: const [null, null],
+                filtro: FILTRO['todas']!,
                 onEdit: (value) {
                   {
                     Navigator.of(context)
@@ -439,7 +449,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               child: SerieBuilder(
                 databaseService: _databaseService,
                 orden: ORDEN[_selectedPopupMenu]!,
-                filtro: const [true, true],
+                filtro: FILTRO['descartadas']!,
                 onEdit: (value) {
                   {
                     Navigator.of(context)
@@ -477,23 +487,28 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 }
 
 PopupMenuItem popupMenuItem(int valor, int selectedPopupMenu, String titulo) {
-    return PopupMenuItem(
-      value: valor,
-      child: Row(children: [
-        (selectedPopupMenu == valor)
-            ? Icon(
-                Icons.arrow_upward,
-                size: 18,
-                color: Colors.teal.withOpacity(0.60),
-              )
-            : (selectedPopupMenu == -valor)
-                ? Icon(
-                    Icons.arrow_downward,
-                    size: 18,
-                    color: Colors.teal.withOpacity(0.60),
-                  )
-                : const SizedBox(width: 18),
-        Text(titulo),
-      ]),
-    );
+  return PopupMenuItem(
+    value: valor,
+    child: Row(children: [
+      (selectedPopupMenu == valor)
+          ? const Icon(
+              Icons.arrow_upward,
+              size: 18,
+              color: Colors.white,
+            )
+          : (selectedPopupMenu == -valor)
+              ? const Icon(
+                  Icons.arrow_downward,
+                  size: 18,
+                  color: Colors.white,
+                )
+              : const SizedBox(width: 18),
+      Text(
+        titulo,
+        style: const TextStyle(
+          color: Colors.tealAccent,
+        ),
+      ),
+    ]),
+  );
 }
