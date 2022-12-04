@@ -12,6 +12,18 @@ import 'package:lista_series/widgets/serie_builder.dart';
 import 'package:lista_series/util/backu_restore.dart';
 import 'package:lista_series/widgets/dialog.dart';
 
+// ignore: constant_identifier_names
+const ORDEN = {
+  1: ['nombre', 'ASC'],
+  2: ['fecha_creacion', 'ASC'],
+  3: ['fecha_modificacion', 'ASC'],
+  4: ['valoracion', 'ASC'],
+  -1: ['nombre', 'DESC'],
+  -2: ['fecha_creacion', 'DESC'],
+  -3: ['fecha_modificacion', 'DESC'],
+  -4: ['valoracion', 'DESC'],
+};
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -29,6 +41,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   late StreamSubscription _intentDataStreamSubscription;
   List<SharedMediaFile>? _sharedFiles;
   Uint8List? imagenShare;
+  int _selectedPopupMenu = 1;
 
   void addSerieImagen(Uint8List imagenShare) {
     Navigator.of(context)
@@ -155,6 +168,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     String msg =
         'Viendo: ${viendo[0]}\nAplazadas: ${aplazadas[0]}\nVistas: ${vistas[0]}\nDescartadas: ${descartadas[0]}\nTodas: ${todas[0]}';
     msgAviso('Sumario', msg);
+  }
+
+  void selectPopupMenu(context, value) {
+    _selectedPopupMenu = value;
   }
 
   @override
@@ -286,6 +303,26 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         appBar: AppBar(
           title: Text(widget.title),
           centerTitle: true,
+          actions: [
+            PopupMenuButton(
+              tooltip: 'Ordenación',
+              itemBuilder: (context) {
+                return [
+                  popupMenuItem(1, _selectedPopupMenu, 'Nombre'),
+                  popupMenuItem(2, _selectedPopupMenu, 'Creación'),
+                  popupMenuItem(3, _selectedPopupMenu, 'Modificación'),
+                  popupMenuItem(4, _selectedPopupMenu, 'Valoración'),
+                ];
+              },
+              onSelected: (value) {
+                setState(() {
+                  (_selectedPopupMenu == value)
+                      ? _selectedPopupMenu = -value
+                      : _selectedPopupMenu = value;
+                });
+              },
+            )
+          ],
           bottom: TabBar(
             controller: _controller,
             isScrollable: true,
@@ -319,26 +356,29 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           children: [
             // Viendo
             Tab(
-                child: SerieBuilder(
-              databaseService: _databaseService,
-              filtro: const [false, false],
-              onEdit: (value) {
-                {
-                  Navigator.of(context)
-                      .push(
-                        MaterialPageRoute(
-                          builder: (_) => SerieFormPage(serie: value),
-                          fullscreenDialog: true,
-                        ),
-                      )
-                      .then((_) => setState(() {}));
-                }
-              },
-            )),
+              child: SerieBuilder(
+                databaseService: _databaseService,
+                orden: ORDEN[_selectedPopupMenu]!,
+                filtro: const [false, false],
+                onEdit: (value) {
+                  {
+                    Navigator.of(context)
+                        .push(
+                          MaterialPageRoute(
+                            builder: (_) => SerieFormPage(serie: value),
+                            fullscreenDialog: true,
+                          ),
+                        )
+                        .then((_) => setState(() {}));
+                  }
+                },
+              ),
+            ),
             // Aplazadas
             Tab(
               child: SerieBuilder(
                 databaseService: _databaseService,
+                orden: ORDEN[_selectedPopupMenu]!,
                 filtro: const [false, true],
                 onEdit: (value) {
                   {
@@ -358,6 +398,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             Tab(
               child: SerieBuilder(
                 databaseService: _databaseService,
+                orden: ORDEN[_selectedPopupMenu]!,
                 filtro: const [true, false],
                 onEdit: (value) {
                   {
@@ -377,6 +418,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             Tab(
               child: SerieBuilder(
                 databaseService: _databaseService,
+                orden: ORDEN[_selectedPopupMenu]!,
                 filtro: const [null, null],
                 onEdit: (value) {
                   {
@@ -396,6 +438,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             Tab(
               child: SerieBuilder(
                 databaseService: _databaseService,
+                orden: ORDEN[_selectedPopupMenu]!,
                 filtro: const [true, true],
                 onEdit: (value) {
                   {
@@ -431,4 +474,26 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       ),
     );
   }
+}
+
+PopupMenuItem popupMenuItem(int valor, int selectedPopupMenu, String titulo) {
+    return PopupMenuItem(
+      value: valor,
+      child: Row(children: [
+        (selectedPopupMenu == valor)
+            ? Icon(
+                Icons.arrow_upward,
+                size: 18,
+                color: Colors.teal.withOpacity(0.60),
+              )
+            : (selectedPopupMenu == -valor)
+                ? Icon(
+                    Icons.arrow_downward,
+                    size: 18,
+                    color: Colors.teal.withOpacity(0.60),
+                  )
+                : const SizedBox(width: 18),
+        Text(titulo),
+      ]),
+    );
 }

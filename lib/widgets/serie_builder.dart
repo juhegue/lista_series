@@ -14,11 +14,13 @@ const int seriesPerPage = 100;
 class SerieBuilder extends StatelessWidget {
   final DatabaseService databaseService;
   final List filtro;
+  final List orden;
   final Function(Serie) onEdit;
   const SerieBuilder({
     Key? key,
     required this.databaseService,
     required this.filtro,
+    required this.orden,
     required this.onEdit,
   }) : super(key: key);
 
@@ -29,8 +31,8 @@ class SerieBuilder extends StatelessWidget {
     //rellenoDemo(databaseService, 1000);
 
     return ChangeNotifierProvider<Catalog>(
-      create: (context) =>
-          Catalog(databaseService: databaseService, filtro: filtro),
+      create: (context) => Catalog(
+          databaseService: databaseService, filtro: filtro, orden: orden),
       child: _SerieBuilder(onEdit: onEdit),
     );
   }
@@ -71,9 +73,11 @@ class _SerieBuilder extends StatelessWidget {
 class Catalog extends ChangeNotifier {
   final DatabaseService databaseService;
   final List filtro;
+  final List orden;
   Catalog({
     required this.databaseService,
     required this.filtro,
+    required this.orden,
   });
 
   static const maxCacheDistance = seriesPerPage * 3;
@@ -100,18 +104,18 @@ class Catalog extends ChangeNotifier {
       return serie;
     }
 
-    _fetchPage(startingIndex, filtro);
+    _fetchPage(startingIndex, filtro, orden);
 
     return Serie.loading();
   }
 
-  Future<void> _fetchPage(int startingIndex, List filtro) async {
+  Future<void> _fetchPage(int startingIndex, List filtro, List orden) async {
     if (_pagesBeingFetched.contains(startingIndex)) {
       return;
     }
 
     _pagesBeingFetched.add(startingIndex);
-    final page = await fetchPage(databaseService, startingIndex, filtro);
+    final page = await fetchPage(databaseService, startingIndex, filtro, orden);
     _pagesBeingFetched.remove(startingIndex);
 
     if (!page.hasNext) {
@@ -151,10 +155,10 @@ class SeriePage {
   });
 }
 
-Future<SeriePage> fetchPage(
-    DatabaseService databaseService, int startingIndex, List filtro) async {
-  final resul =
-      await countSeries(databaseService, seriesPerPage, startingIndex, filtro);
+Future<SeriePage> fetchPage(DatabaseService databaseService, int startingIndex,
+    List filtro, List orden) async {
+  final resul = await countSeries(
+      databaseService, seriesPerPage, startingIndex, filtro, orden);
   final catalogLength = resul[0];
   final series = resul[1];
 

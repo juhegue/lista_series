@@ -117,14 +117,17 @@ Serie _mapToSerie(var map) {
   );
 }
 
-Future countSeries(
-    DatabaseService dbs, int limit, int offset, List filtro) async {
+Future countSeries(DatabaseService dbs, int limit, int offset, List filtro,
+    [List? orden]) async {
   final db = await dbs.database;
   final int aplazada = (filtro[0] == false && filtro[1] == true) ? 1 : 0;
   final int vista = (filtro[0] == true && filtro[1] == false) ? 1 : 0;
   final int descartada = ((filtro[0] == true && filtro[1] == true)) ? 1 : 0;
   late final int? count;
   late final List<Map<String, dynamic>> maps;
+
+  var columna = (orden != null) ? orden[0] : null;
+  var tipo = (orden != null) ? orden[1] : null;
 
   await db.transaction(
     (txn) async {
@@ -135,10 +138,16 @@ Future countSeries(
               'SELECT COUNT(*) FROM serie WHERE vista=$vista AND aplazada=$aplazada AND descartada=$descartada'));
 
       maps = (filtro[0] == null && filtro[1] == null)
-          ? await txn.rawQuery(
-              'SELECT * FROM serie ORDER BY nombre COLLATE NOCASE ASC LIMIT $limit OFFSET $offset')
-          : await txn.rawQuery(
-              'SELECT * FROM serie WHERE vista=$vista AND aplazada=$aplazada AND descartada=$descartada ORDER BY nombre COLLATE NOCASE ASC LIMIT $limit OFFSET $offset');
+          ? (orden == null)
+              ? await txn.rawQuery(
+                  'SELECT * FROM serie ORDER BY nombre COLLATE NOCASE ASC LIMIT $limit OFFSET $offset')
+              : await txn.rawQuery(
+                  'SELECT * FROM serie ORDER BY $columna COLLATE NOCASE $tipo, nombre COLLATE NOCASE $tipo LIMIT $limit OFFSET $offset')
+          : (orden == null)
+              ? await txn.rawQuery(
+                  'SELECT * FROM serie WHERE vista=$vista AND aplazada=$aplazada AND descartada=$descartada ORDER BY nombre COLLATE NOCASE ASC LIMIT $limit OFFSET $offset')
+              : await txn.rawQuery(
+                  'SELECT * FROM serie WHERE vista=$vista AND aplazada=$aplazada AND descartada=$descartada ORDER BY $columna COLLATE NOCASE $tipo, nombre COLLATE NOCASE $tipo LIMIT $limit OFFSET $offset');
     },
   );
 
