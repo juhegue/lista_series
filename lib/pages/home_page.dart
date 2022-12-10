@@ -9,6 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:lista_series/services/database_service.dart';
 import 'package:lista_series/models/serie.dart';
+import 'package:lista_series/models/preferencia.dart';
 import 'package:lista_series/pages/serie_form_page.dart';
 import 'package:lista_series/widgets/serie_builder.dart';
 import 'package:lista_series/util/backu_restore.dart';
@@ -88,17 +89,26 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     super.initState();
     _databaseService = DatabaseService();
 
-    _controller = TabController(length: 5, vsync: this);
+    Preferencia.get(_databaseService).then((result) {
+      _selectedIndex = result.tabIndex;
+      _selectedPopupMenu = result.ordenIndex;
+      _controller.animateTo(_selectedIndex);
+    });
+
+    _controller =
+        TabController(initialIndex: _selectedIndex, length: 5, vsync: this);
+
     _controller.addListener(
       () {
         setState(
           () {
             _selectedIndex = _controller.index;
+            Preferencia(
+                    tabIndex: _selectedIndex, ordenIndex: _selectedPopupMenu)
+                .save(_databaseService);
             if (kDebugMode) {
               print('Tab $_selectedIndex');
             }
-            // No es necesario, esto sería para forzar a posicionarce en un tab
-            //DefaultTabController.of(context)?.animateTo(_selectedIndex);
           },
         );
       },
@@ -329,6 +339,11 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   (_selectedPopupMenu == value)
                       ? _selectedPopupMenu = -value
                       : _selectedPopupMenu = value;
+
+                  Preferencia(
+                    tabIndex: _selectedIndex,
+                    ordenIndex: _selectedPopupMenu,
+                  ).save(_databaseService);
                 });
               },
             )

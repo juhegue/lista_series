@@ -16,7 +16,7 @@ class DatabaseService {
   static Database? _database;
 
   static const SECRET_KEY = '0123456789ABCDEF';
-  static const DATABASE_VERSION = 5;
+  static const DATABASE_VERSION = 6;
 
   List<String> tables = ['serie'];
 
@@ -97,7 +97,18 @@ class DatabaseService {
         'CREATE TABLE serie(id INTEGER PRIMARY KEY AUTOINCREMENT, fecha_creacion INTEGER, fecha_modificacion INTEGER, nombre TEXT, temporada INTEGER, capitulo INTEGER, valoracion INTEGER, vista INTEGER, aplazada INTEGER, descartada INTEGER, imagen BLOB)',
       );
       if (kDebugMode) {
-        print("DATABASE CREATE v4");
+        print("DATABASE CREATE v5");
+      }
+    },
+    6: (Database db) async {
+      await db.execute(
+        'CREATE TABLE serie(id INTEGER PRIMARY KEY AUTOINCREMENT, fecha_creacion INTEGER, fecha_modificacion INTEGER, nombre TEXT, temporada INTEGER, capitulo INTEGER, valoracion INTEGER, vista INTEGER, aplazada INTEGER, descartada INTEGER, imagen BLOB)',
+      );
+      await db.execute(
+        'CREATE TABLE preferencia(id INTEGER PRIMARY, tab_index INTEGER, orden_index INTEGER)',
+      );
+      if (kDebugMode) {
+        print("DATABASE CREATE v6");
       }
     },
   };
@@ -172,6 +183,15 @@ class DatabaseService {
       }
       // Añade campo descartada
       db.rawQuery('ALTER TABLE serie ADD descartada INTEGER DEFAULT 0');
+    },
+    'from_version_5_to_version_6': (Database db) async {
+      if (kDebugMode) {
+        print('from_version_5_to_version_6');
+      }
+      // Añade tabla preferencias
+      await db.execute(
+        'CREATE TABLE preferencia(id INTEGER PRIMARY KEY AUTOINCREMENT, tab_index INTEGER, orden_index INTEGER)',
+      );
     },
   };
 
