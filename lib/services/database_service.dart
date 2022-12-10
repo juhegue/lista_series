@@ -101,14 +101,16 @@ class DatabaseService {
       }
     },
     6: (Database db) async {
-      await db.execute(
-        'CREATE TABLE serie(id INTEGER PRIMARY KEY AUTOINCREMENT, fecha_creacion INTEGER, fecha_modificacion INTEGER, nombre TEXT, temporada INTEGER, capitulo INTEGER, valoracion INTEGER, vista INTEGER, aplazada INTEGER, descartada INTEGER, imagen BLOB)',
+      Batch batch = db.batch();
+      batch.execute(
+        'CREATE TABLE serie(id INTEGER PRIMARY KEY AUTOINCREMENT, fecha_creacion INTEGER, fecha_modificacion INTEGER, nombre TEXT, temporada INTEGER, capitulo INTEGER, valoracion INTEGER, vista INTEGER, aplazada INTEGER, descartada INTEGER, imagen BLOB)'
       );
-      await db.execute(
-        'CREATE TABLE preferencia(id INTEGER PRIMARY, tab_index INTEGER, orden_index INTEGER)',
+      batch.execute(
+        'CREATE TABLE preferencia(id INTEGER, tab_index INTEGER, orden_index INTEGER)'
       );
+      List<dynamic> result = await batch.commit();
       if (kDebugMode) {
-        print("DATABASE CREATE v6");
+        print("DATABASE CREATE v6: $result");
       }
     },
   };
@@ -190,7 +192,7 @@ class DatabaseService {
       }
       // Añade tabla preferencias
       await db.execute(
-        'CREATE TABLE preferencia(id INTEGER PRIMARY KEY AUTOINCREMENT, tab_index INTEGER, orden_index INTEGER)',
+        'CREATE TABLE preferencia(id INTEGER, tab_index INTEGER, orden_index INTEGER)',
       );
     },
   };
