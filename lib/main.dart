@@ -39,7 +39,7 @@ void setupWindow() {
 }
 
 class MyApp extends StatelessWidget {
-  final Preferencia preferencia;
+  final Preferencia? preferencia;
   const MyApp({super.key, required this.preferencia});
 
   @override

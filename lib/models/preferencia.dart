@@ -2,15 +2,15 @@ import 'package:sqflite/sqflite.dart';
 import 'package:lista_series/services/database_service.dart';
 
 class Preferencia {
-  final int? id;
   final int tabIndex;
   final int ordenIndex;
 
-  const Preferencia({
-    this.id,
+  Preferencia({
     required this.tabIndex,
     required this.ordenIndex,
   });
+
+  int id = 1;
 
   Map<String, dynamic> toMap() {
     return {
@@ -22,7 +22,6 @@ class Preferencia {
 
   factory Preferencia.fromMap(Map<String, dynamic> map) {
     return Preferencia(
-      id: map['id'],
       tabIndex: map['tab_index'],
       ordenIndex: map['orden_index'],
     );
@@ -30,16 +29,12 @@ class Preferencia {
 
   @override
   String toString() {
-    return 'Preferencia [$id] tab $tabIndex orden $ordenIndex';
+    return 'Preferencia: tab $tabIndex orden $ordenIndex';
   }
 
   Future<void> save(DatabaseService dbs) async {
-    Preferencia preferencia = await get(dbs);
-
-    Preferencia p =
-        Preferencia(id: 1, tabIndex: tabIndex, ordenIndex: ordenIndex);
-
-    (preferencia.id == 0) ? p._insert(dbs) : p._update(dbs);
+    Preferencia? preferencia = await get(dbs);
+    (preferencia == null) ? _insert(dbs) : _update(dbs);
   }
 
   Future<void> _insert(DatabaseService dbs) async {
@@ -59,7 +54,7 @@ class Preferencia {
       'preferencia',
       toMap(),
       where: 'id = ?',
-      whereArgs: [1],
+      whereArgs: [id],
     );
   }
 
@@ -68,19 +63,17 @@ class Preferencia {
     await db.delete(
       'preferencia',
       where: 'id = ?',
-      whereArgs: [1],
+      whereArgs: [id],
     );
   }
 
-  static Future<Preferencia> get(DatabaseService dbs) async {
+  static Future<Preferencia?> get(DatabaseService dbs) async {
     final db = await dbs.database;
     final List maps = await db.query(
       'preferencia',
       where: 'id = ?',
       whereArgs: [1],
     );
-    return (maps.isEmpty)
-        ? Preferencia.fromMap({'id': 0, 'tab_index': 0, 'orden_index': 1})
-        : Preferencia.fromMap(maps[0]);
+    return (maps.isEmpty) ? null : Preferencia.fromMap(maps[0]);
   }
 }
