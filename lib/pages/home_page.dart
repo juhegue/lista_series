@@ -35,9 +35,9 @@ const FILTRO = {
 };
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
+  final Preferencia preferencia;
   final String title;
+  const MyHomePage({super.key, required this.preferencia, required this.title});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -89,11 +89,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     super.initState();
     _databaseService = DatabaseService();
 
-    Preferencia.get(_databaseService).then((result) {
-      _selectedIndex = result.tabIndex;
-      _selectedPopupMenu = result.ordenIndex;
-      _controller.animateTo(_selectedIndex);
-    });
+    _selectedIndex = widget.preferencia.tabIndex;
+    _selectedPopupMenu = widget.preferencia.ordenIndex;
 
     _controller =
         TabController(initialIndex: _selectedIndex, length: 5, vsync: this);

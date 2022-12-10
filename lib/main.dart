@@ -4,12 +4,17 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter/foundation.dart';
 import 'package:window_size/window_size.dart';
 import 'package:lista_series/pages/home_page.dart';
+import 'package:lista_series/services/database_service.dart';
+import 'package:lista_series/models/preferencia.dart';
 
 void main() {
   setupWindow();
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  runApp(const MyApp());
+  DatabaseService databaseService = DatabaseService();
+  Preferencia.get(databaseService).then((result) {
+    runApp(MyApp(preferencia: result));
+  });
 }
 
 const double windowWidth = 480;
@@ -34,7 +39,8 @@ void setupWindow() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final Preferencia preferencia;
+  const MyApp({super.key, required this.preferencia});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +49,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.teal,
       ),
-      home: const MyHomePage(title: 'Lista Series'),
+      home: MyHomePage(preferencia: preferencia, title: 'Lista Series'),
     );
   }
 }
